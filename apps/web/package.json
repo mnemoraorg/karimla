@@ -6,7 +6,7 @@
   "packageManager": "bun@1.3.14",
   "scripts": {
     "generate-types": "wrangler types --env-interface=CloudflareEnv ./worker-configuration.d.ts",
-    "dev": "bun run generate-types && vinext dev --port 34003",
+    "dev": "bun run generate-types && vinext dev --port 35000",
     "build": "bun run generate-types && vinext build",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "deploy": "vinext-cloudflare deploy --config dist/server/wrangler.json",

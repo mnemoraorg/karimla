@@ -6,7 +6,7 @@ import { cdnAdapter } from "@vinext/cloudflare/cache/cdn-adapter"
 export default defineConfig({
   clearScreen: false,
   server: {
-    port: 34003,
+    port: 35000,
     strictPort: true,
   },
   plugins: [

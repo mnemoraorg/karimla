@@ -9,11 +9,7 @@ import { ThemeProvider } from "@packages/ui-w/providers/theme-provider"
 import { ToastProvider } from "@packages/ui-w/providers/toast-provider"
 import { TooltipProvider } from "@packages/ui-w/providers/tooltip-provider"
 
-export const metadata: Metadata = createMetadata({
-  name: "Karimla",
-  description: "A playful word-counting game that tracks how many times each person says karimla.",
-  url: "https://karimla.mnemora.org",
-})
+export const metadata: Metadata = createMetadata()
 
 export default function RootLayout({
   children,

@@ -1,0 +1,5 @@
+files=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$files" ] && exit 0
+
+git diff --cached --name-only --diff-filter=ACMR -z | xargs -0 bun x prettier --write --ignore-unknown
+git diff --cached --name-only --diff-filter=ACMR -z | xargs -0 git add

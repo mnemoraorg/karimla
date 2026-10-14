@@ -1,0 +1,9 @@
+node_modules
+**/.next
+**/.vinext
+**/.turbo
+**/.wrangler
+**/dist
+**/worker-configuration.d.ts
+**/next-env.d.ts
+.zed

@@ -1,0 +1,26 @@
+{
+  "extends": "@packages/typescript/nextjs.json",
+  "compilerOptions": {
+    "incremental": false,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"],
+      "@packages/ui-w/*": ["../../packages/ui-w/*"]
+    },
+    "types": ["./worker-configuration.d.ts", "node"]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}

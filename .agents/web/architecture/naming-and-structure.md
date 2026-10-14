@@ -1,0 +1,71 @@
+# Naming and structure
+
+Use route-grouped pages and layered client modules. Do not create pages inside `components/` or empty directories for symmetry.
+
+```text
+apps/web/
+├── AGENTS.md
+├── .env.example
+├── api/
+│   └── auth/
+│       ├── client.ts
+│       ├── send-otp.ts
+│       └── sign-in.ts
+├── app/
+│   ├── layout.tsx
+│   ├── (auth)/
+│   │   └── login/
+│   │       └── page.tsx
+│   └── (protected)/
+│       └── page.tsx
+├── components/
+│   └── pages/
+│       ├── home/
+│       │   └── karimla-counter.tsx
+│       └── login/
+│           ├── _fields/
+│           │   ├── login-field.tsx
+│           │   └── otp-field.tsx
+│           └── _form/
+│               └── login-form.tsx
+├── hooks/
+│   └── api/
+│       └── auth/
+│           ├── use-send-otp.ts
+│           └── use-sign-in.ts
+├── lib/
+│   └── auth/
+│       ├── session.ts
+│       └── session-user.ts
+├── providers/
+│   └── query-provider.tsx
+├── test/
+│   └── unit/
+│       ├── api/
+│       │   └── otp.test.mjs
+│       └── lib/
+│           └── session-user.test.mjs
+├── package.json
+└── tsconfig.json
+```
+
+Responsibilities:
+
+- `app/` owns routable pages only; `(auth)` and `(protected)` group by access, enforced by `lib/auth/` guards.
+- `components/pages/<page>/` owns page-specific UI; underscore-prefixed `_form/` and `_fields/` are non-routable implementation pieces.
+- `api/` owns HTTP request functions and error mapping; `hooks/api/` owns React Query wrappers.
+- `lib/auth/` owns server session reads (`session.ts`, Next imports allowed) and the pure session mapper (`session-user.ts`, no Next imports so `bun test` can load it).
+- `providers/` owns shared client providers.
+- `test/` mirrors behavior tiers, not production implementation directories.
+
+Keep imports in this order:
+
+1. A file directive such as `"use client"`, when needed.
+2. External libraries and packages (`react`, `next/*`, `@tanstack/*`, and similar).
+3. Shared workspace packages (`@packages/ui-w/...`, `@packages/metadata`, and similar).
+4. Web API modules from `@/api/...`.
+5. Web hooks from `@/hooks/...`.
+6. Web providers, helpers, and state modules (`@/providers/...`, `@/lib/...`, and similar).
+7. Local web components from `@/components/...`.
+
+Use one blank line between groups. Use the configured `@/` alias for cross-directory web imports. Keep same-directory relative imports only for small internal modules where an alias would add no clarity. Keep type-only imports in the group for the module they import from.

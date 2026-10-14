@@ -1,49 +1,52 @@
-# Web instructions
+# Web architecture guidance
 
-These instructions apply to `apps/web/`. Read them before changing the web application. The scoped runtime instructions are in `apps/web/AGENTS.md`; ports are recorded in `.docs/ports.md`.
+This document is the active architecture guidance for `apps/web/`. The scoped runtime instructions are in `apps/web/AGENTS.md`; the full reference index is [architecture/_index.md](architecture/_index.md); ports are recorded in `.docs/ports.md`.
 
-## Imports
+## Ownership
 
-Keep imports in this order:
+`apps/web/` owns routes, presentation, and client session UX. It does not own identity or business data:
 
-1. A file directive such as `"use client"`, when needed.
-2. External libraries and packages (`react`, `next/*`, `@tanstack/*`, and similar).
-3. Shared workspace packages (`@packages/ui-w/...`, `@packages/metadata`, and similar).
-4. Web API modules from `@/api/...`.
-5. Web hooks from `@/hooks/...`.
-6. Web providers, helpers, and state modules (`@/providers/...`, `@/lib/...`, and similar).
-7. Local web components from `@/components/...`.
+- BetterAuth owns identity and session semantics. The web app only reads the session through `get-session` and redirects; it never verifies codes or mints sessions itself.
+- The Go API (planned, port `35080`) will own counter and friends data. Until it exists, do not build new browser-storage persistence for data the API will own.
+- No passwords, OTP codes, or session tokens are stored, logged, or decided by web code.
 
-Use one blank line between groups. Use the configured `@/` alias for cross-directory web imports. Keep same-directory relative imports only for small internal modules where an alias would add no clarity.
+## Boundary and request flow
 
-## Structure
+```text
+Browser
+    ↓
+Web routes (RSC) + client components
+    ↓               ↓
+BetterAuth      Planned Go API
+/api/v1/auth    (counter, friends)
+```
 
-- Route pages live only in `app/` (e.g. `app/(auth)/login/page.tsx`, `app/(protected)/page.tsx`). Never create a page inside `components/`.
-- Page-specific components belong under `components/pages/<page>/`.
-- Use private underscored folders such as `_form/` and `_fields/` for page-local implementation pieces.
-- HTTP request functions belong under `api/` (e.g. `api/auth/client.ts`, `api/auth/send-otp.ts`, `api/auth/sign-in.ts`).
-- React Query wrappers belong under `hooks/api/` (e.g. `hooks/api/auth/use-send-otp.ts`, `hooks/api/auth/use-sign-in.ts`).
-- Shared client providers belong under `providers/` (e.g. `providers/query-provider.tsx`).
-- Server route guards belong under `lib/auth/` (`session.ts` reads the BetterAuth session, `session-user.ts` maps it with no Next imports so bun tests can cover it).
-- Components call hooks; never call API endpoints or `fetch` directly from a component.
-- Reuse existing `@packages/ui-w` primitives before creating new web UI primitives.
-- The login flow posts to the auth service at `NEXT_PUBLIC_AUTH_URL` (local default `http://localhost:35081`) and uses `/api/v1/auth` paths.
+Server components forward request cookies to BetterAuth; client requests use `credentials: "include"`. Auth responses drive redirects, never stored credentials.
+
+## Session and routes
+
+- `app/(protected)/` requires a session (`requireKarimlaSession`) and redirects to `/login` without one.
+- `app/(auth)/login` redirects to `/` when a session already exists.
+- The login form is email → 6-digit code; the pending email survives refresh through `?step=verify` plus session storage and is cleared on verify or email change.
+- Treat any auth outage as logged-out (redirect to `/login`); there is no separate error page.
+
+## Data fetching
+
+- HTTP request functions live in `api/`; React Query wrappers live in `hooks/api/`; components call hooks and never call endpoints or `fetch` directly.
+- The shared `QueryClient` disables retries and refetch-on-focus; mutations surface typed errors the form renders.
+- The auth base URL comes from `NEXT_PUBLIC_AUTH_URL` with a development fallback to `http://localhost:35081`.
 
 ## Testing
 
-Tests live under `apps/web/test/` in behavior tiers, mirroring `apps/auth/test/`:
+Tests follow the tiered layout under `apps/web/test/`, mirroring `apps/auth/test/`:
 
-- `test/unit/` contains API-function and pure-helper tests run with `bun test`; no `next/*` imports (keep Next-dependent code behind pure modules like `lib/auth/session-user.ts`).
+- `test/unit/` contains API-function and pure-helper tests run with `bun test`.
 - `test/integration/` and `test/e2e/` are reserved for HTTP-boundary and full-flow coverage; do not create them until a real behavior needs them.
+- Keep `next/*` imports out of unit-tested modules; put Next-dependent code behind pure modules like `lib/auth/session-user.ts`.
 
-## Verification
+## Reference routing
 
-Run the smallest relevant checks for web changes from the repository root:
+- Read the relevant reference under `.agents/web/architecture/` for routing, fetching, structure, or testing changes.
+- Update `apps/web/.env.example` and `.docs/ports.md` when the web configuration contract or ports change.
 
-```sh
-bunx tsc --noEmit -p apps/web/tsconfig.json
-bun run --cwd apps/web test
-bun run --cwd apps/web build
-```
-
-Documentation-only changes require documentation formatting checks rather than application builds.
+Keep this document focused on ownership and boundaries; do not turn it into a runbook.

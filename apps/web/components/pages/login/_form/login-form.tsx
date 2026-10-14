@@ -40,6 +40,7 @@ export function LoginForm(): React.ReactElement {
   const [email, setEmail] = useState("")
   const [otp, setOtp] = useState("")
   const [error, setError] = useState("")
+  const [isRedirecting, setIsRedirecting] = useState(false)
   const [cooldownUntil, setCooldownUntil] = useState(0)
   const [now, setNow] = useState(() => Date.now())
   const cooldownMs = cooldownRemainingMs(cooldownUntil, now)
@@ -107,6 +108,7 @@ export function LoginForm(): React.ReactElement {
       {
         onSuccess: () => {
           clearPending()
+          setIsRedirecting(true)
           window.location.replace("/")
         },
         onError: (requestError) => setError(requestError.message),
@@ -114,8 +116,10 @@ export function LoginForm(): React.ReactElement {
     )
   }
 
+  const isVerifying = signIn.isPending || isRedirecting
+
   function handleResendCode(): void {
-    if (cooldownMs > 0 || sendOtp.isPending || signIn.isPending) return
+    if (cooldownMs > 0 || sendOtp.isPending || isVerifying) return
     setError("")
     sendOtp.mutate(email, {
       onSuccess: armCooldown,
@@ -140,9 +144,9 @@ export function LoginForm(): React.ReactElement {
           We sent a 6-digit code to <span className="text-foreground">{email}</span>.
         </p>
         <form className="flex w-full flex-col gap-4" onSubmit={handleOtpSubmit}>
-          <OtpField disabled={signIn.isPending} onChange={setOtp} value={otp} />
-          <Button className="w-full" disabled={otp.length !== 6 || signIn.isPending} type="submit">
-            {signIn.isPending ? "Verifying…" : "Verify and continue"}
+          <OtpField disabled={isVerifying} onChange={setOtp} value={otp} />
+          <Button className="w-full" disabled={otp.length !== 6 || isVerifying} type="submit">
+            {isVerifying ? "Verifying…" : "Verify and continue"}
           </Button>
         </form>
         {error && (
@@ -158,7 +162,7 @@ export function LoginForm(): React.ReactElement {
             </span>
           ) : (
             <Button
-              disabled={sendOtp.isPending || signIn.isPending}
+              disabled={sendOtp.isPending || isVerifying}
               size="sm"
               variant="link"
               onClick={handleResendCode}

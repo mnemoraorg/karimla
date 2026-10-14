@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test"
 
-const { toKarimlaSession } = await import("./session-user.ts")
+const { toKarimlaSession } = await import("../../../lib/auth/session-user.ts")
 
 describe("toKarimlaSession", () => {
   it("returns the email and name from a session payload", () => {

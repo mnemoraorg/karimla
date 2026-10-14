@@ -29,6 +29,13 @@ Use one blank line between groups. Use the configured `@/` alias for cross-direc
 - Reuse existing `@packages/ui-w` primitives before creating new web UI primitives.
 - The login flow posts to the auth service at `NEXT_PUBLIC_AUTH_URL` (local default `http://localhost:35081`) and uses `/api/v1/auth` paths.
 
+## Testing
+
+Tests live under `apps/web/test/` in behavior tiers, mirroring `apps/auth/test/`:
+
+- `test/unit/` contains API-function and pure-helper tests run with `bun test`; no `next/*` imports (keep Next-dependent code behind pure modules like `lib/auth/session-user.ts`).
+- `test/integration/` and `test/e2e/` are reserved for HTTP-boundary and full-flow coverage; do not create them until a real behavior needs them.
+
 ## Verification
 
 Run the smallest relevant checks for web changes from the repository root:

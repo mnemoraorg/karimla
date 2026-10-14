@@ -4,8 +4,8 @@ const originalAuthUrl = process.env.NEXT_PUBLIC_AUTH_URL
 const originalFetch = globalThis.fetch
 process.env.NEXT_PUBLIC_AUTH_URL = "https://auth.example/"
 
-const { sendLoginOtp } = await import("./send-otp.ts")
-const { signInWithOtp } = await import("./sign-in.ts")
+const { sendLoginOtp } = await import("../../../api/auth/send-otp.ts")
+const { signInWithOtp } = await import("../../../api/auth/sign-in.ts")
 
 afterEach(() => {
   globalThis.fetch = originalFetch

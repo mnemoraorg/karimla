@@ -14,3 +14,8 @@ Before changing web structure, import conventions, or API/hook boundaries, read 
 
 - Put HTTP request functions in `api/` and React Query wrappers in `hooks/api/`.
 - Components call hooks; never call API endpoints or `fetch` directly from a component.
+
+## Testing
+
+- Put tests under `test/unit/` (API functions, pure helpers) and run them with `bun run --cwd apps/web test`.
+- Keep `next/*` imports out of unit-tested modules so `bun test` can load them.

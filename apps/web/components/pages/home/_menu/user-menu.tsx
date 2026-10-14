@@ -39,7 +39,7 @@ export function UserMenu(): React.ReactElement | null {
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{email}</SheetDescription>
         </SheetHeader>
-        <SheetFooter>
+        <SheetFooter variant="bare" className="border-border mt-auto flex-col gap-2 border-t">
           {error && (
             <p className="text-destructive text-center text-sm" role="alert">
               {error}
@@ -48,6 +48,7 @@ export function UserMenu(): React.ReactElement | null {
           <Button
             className="w-full"
             disabled={signOut.isPending}
+            variant="ghost"
             onClick={() =>
               signOut.mutate(undefined, {
                 onError: (requestError) => setError(requestError.message),

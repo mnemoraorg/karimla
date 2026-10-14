@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type * as React from "react"
 
 import { Button } from "@packages/ui-w/shared/button/button"
@@ -11,6 +11,23 @@ import { useSignInWithOtp } from "@/hooks/api/auth/use-sign-in"
 
 type LoginStep = "email" | "code"
 
+const PENDING_EMAIL_KEY = "karimla.pending-email"
+
+function readPendingEmail(): string | null {
+  if (new URLSearchParams(window.location.search).get("step") !== "verify") return null
+
+  const email = window.sessionStorage.getItem(PENDING_EMAIL_KEY)
+  return email ? email : null
+}
+
+function showVerifyStep(): void {
+  window.history.replaceState(null, "", "?step=verify")
+}
+
+function showEmailStep(): void {
+  window.history.replaceState(null, "", window.location.pathname)
+}
+
 export function LoginForm(): React.ReactElement {
   const sendOtp = useSendLoginOtp()
   const signIn = useSignInWithOtp()
@@ -18,6 +35,14 @@ export function LoginForm(): React.ReactElement {
   const [email, setEmail] = useState("")
   const [otp, setOtp] = useState("")
   const [error, setError] = useState("")
+
+  useEffect(() => {
+    const pendingEmail = readPendingEmail()
+    if (pendingEmail) {
+      setEmail(pendingEmail)
+      setStep("code")
+    }
+  }, [])
 
   function handleEmailSubmit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault()
@@ -32,7 +57,10 @@ export function LoginForm(): React.ReactElement {
 
     sendOtp.mutate(address, {
       onSuccess: () => {
-        setEmail(address.trim().toLowerCase())
+        const normalizedEmail = address.trim().toLowerCase()
+        window.sessionStorage.setItem(PENDING_EMAIL_KEY, normalizedEmail)
+        showVerifyStep()
+        setEmail(normalizedEmail)
         setOtp("")
         setStep("code")
       },
@@ -47,15 +75,28 @@ export function LoginForm(): React.ReactElement {
     signIn.mutate(
       { email, otp },
       {
-        onSuccess: () => window.location.replace("/"),
+        onSuccess: () => {
+          window.sessionStorage.removeItem(PENDING_EMAIL_KEY)
+          window.location.replace("/")
+        },
         onError: (requestError) => setError(requestError.message),
       },
     )
   }
 
+  function handleResendCode(): void {
+    if (sendOtp.isPending || signIn.isPending) return
+    setError("")
+    sendOtp.mutate(email, {
+      onError: (requestError) => setError(requestError.message),
+    })
+  }
+
   function useDifferentEmail(): void {
     sendOtp.reset()
     signIn.reset()
+    window.sessionStorage.removeItem(PENDING_EMAIL_KEY)
+    showEmailStep()
     setError("")
     setOtp("")
     setStep("email")
@@ -81,10 +122,8 @@ export function LoginForm(): React.ReactElement {
         <div className="flex items-center justify-center gap-4 text-sm">
           <button
             className="text-muted-foreground hover:text-foreground"
-            disabled={sendOtp.isPending}
-            onClick={() =>
-              sendOtp.mutate(email, { onError: (requestError) => setError(requestError.message) })
-            }
+            disabled={sendOtp.isPending || signIn.isPending}
+            onClick={handleResendCode}
             type="button"
           >
             {sendOtp.isPending ? "Sending…" : "Resend code"}

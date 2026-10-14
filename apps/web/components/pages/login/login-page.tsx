@@ -14,12 +14,16 @@ export function LoginPage(): React.ReactElement {
 
   return (
     <div className="flex min-h-svh flex-col">
+      <header className="flex items-center justify-center py-6">
+        <p className="text-sm font-medium">Karimla by Mnemora</p>
+      </header>
       <div className="flex flex-1 flex-col items-center justify-center px-6">
         <div className="flex w-full max-w-xs flex-col items-center gap-6">
           <div className="flex flex-col items-center gap-1 text-center">
-            <p className="text-sm font-medium">Karimla</p>
-            <h1 className="text-xl font-semibold">Welcome Back</h1>
-            <p className="text-muted-foreground text-sm">Please login to your account</p>
+            <h1 className="text-xl font-semibold">Did someone just say karimla?</h1>
+            <p className="text-muted-foreground text-sm">
+              Log in to count every chilly outburst with your friends
+            </p>
           </div>
 
           <form className="flex w-full flex-col gap-4" onSubmit={handleEmailSubmit}>

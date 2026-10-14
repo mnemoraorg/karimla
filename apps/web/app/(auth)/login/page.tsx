@@ -17,11 +17,10 @@ export default function Page() {
 
           <LoginForm />
 
-          <p className="text-muted-foreground text-sm">
-            Don&apos;t have an account?{" "}
-            <a className="text-primary" href="#">
-              Sign up
-            </a>
+          <p className="text-muted-foreground text-center text-sm">
+            Never counted a karimla?
+            <br />
+            The next chilly outburst still counts.
           </p>
         </div>
       </div>

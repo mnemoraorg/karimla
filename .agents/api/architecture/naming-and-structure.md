@@ -20,7 +20,7 @@ apps/api/
 
 - Feature packages are named after the product capability (`counter`), not the transport (`counterHandler` is wrong; `handler/counter` holding translation is right).
 - `adapter/postgres/store.go` owns the Ent client; per-feature persistence lives under `adapter/postgres/repository/` (e.g. `repository/counter.go`), one file per port implementation.
-- Domain services split one file per operation under `domain/<feature>/service/` (`service.go` holds the type and constructor, e.g. `get_count.go` and `increment.go` hold the operations); the feature root keeps only the model, errors, and repository port.
+- Domain services split one file per operation under `domain/<feature>/service/` (`service.go` holds the type and constructor, e.g. `get_count.go` and `increment.go` hold the operations); the feature root keeps only the model, errors, repository port, and `validator.go` for orchestration-input rules.
 - Files are named after their single responsibility: `route.go` registers, `router.go` versions, `get.go` handles one read.
 - Shared type-only or cross-feature helpers belong in `internal/shared/` only when at least two features genuinely use them.
 - Test files live under `test/unit/<same-path>/` with the same base name plus `_test.go` (e.g. `route_test.go`); test packages are external (`package http_test`).

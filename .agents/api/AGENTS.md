@@ -64,7 +64,8 @@ delivery/http → handler → domain service → repository port → adapter/Pos
 - `internal/config/` owns environment parsing and validation.
 - `internal/delivery/http/` owns Fiber route registration, versioning, and middleware wiring.
 - `internal/handler/` translates HTTP requests and responses. Handlers must not query databases or orchestrate repositories.
-- `internal/domain/<feature>/` will own business models, errors, use cases, and repository interfaces. Domain code must not import Fiber.
+- `internal/domain/<feature>/` owns business models, errors, use cases, and repository interfaces. Domain code must not import Fiber.
+- Validation splits by trust level: handlers validate transport shape, domain `validator.go` owns orchestration-input rules called by every service operation, and repositories assume valid input.
 - `internal/adapter/` will own Ent/PostgreSQL and BetterAuth implementations.
 - `internal/shared/` contains only genuinely shared contracts such as the response envelope.
 

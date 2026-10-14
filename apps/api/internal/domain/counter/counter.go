@@ -7,6 +7,8 @@ import (
 
 var ErrNotFound = errors.New("counter not found")
 
+var ErrInvalidInput = errors.New("invalid counter input")
+
 type Counter struct {
 	AuthUserID string
 	Count      int

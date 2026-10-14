@@ -8,6 +8,9 @@ import (
 )
 
 func (s *Service) GetCount(ctx context.Context, authUserID string) (int, error) {
+	if err := counter.ValidateUserID(authUserID); err != nil {
+		return 0, err
+	}
 	found, err := s.repository.Get(ctx, authUserID)
 	if errors.Is(err, counter.ErrNotFound) {
 		return 0, nil

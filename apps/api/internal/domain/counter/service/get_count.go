@@ -1,0 +1,19 @@
+package service
+
+import (
+	"context"
+	"errors"
+
+	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
+)
+
+func (s *Service) GetCount(ctx context.Context, authUserID string) (int, error) {
+	found, err := s.repository.Get(ctx, authUserID)
+	if errors.Is(err, counter.ErrNotFound) {
+		return 0, nil
+	}
+	if err != nil {
+		return 0, err
+	}
+	return found.Count, nil
+}

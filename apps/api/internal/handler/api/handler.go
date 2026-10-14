@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
+	counterservice "github.com/mnemoraorg/karimla/apps/api/internal/domain/counter/service"
 	authmiddleware "github.com/mnemoraorg/karimla/apps/api/internal/middleware/auth"
 	"github.com/mnemoraorg/karimla/apps/api/internal/shared/response"
 )
@@ -12,10 +12,10 @@ type CounterResponse struct {
 }
 
 type Handlers struct {
-	Counter *counter.Service
+	Counter *counterservice.Service
 }
 
-func New(counterService *counter.Service) *Handlers {
+func New(counterService *counterservice.Service) *Handlers {
 	return &Handlers{Counter: counterService}
 }
 

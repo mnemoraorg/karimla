@@ -1,10 +1,11 @@
-package counter_test
+package service_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
+	counterservice "github.com/mnemoraorg/karimla/apps/api/internal/domain/counter/service"
 )
 
 type fakeRepository struct {
@@ -25,7 +26,7 @@ func (f *fakeRepository) Increment(_ context.Context, authUserID string) (counte
 }
 
 func TestGetCountDefaultsMissingUsersToZero(t *testing.T) {
-	service := counter.NewService(&fakeRepository{rows: map[string]int{}})
+	service := counterservice.NewService(&fakeRepository{rows: map[string]int{}})
 
 	count, err := service.GetCount(context.Background(), "user-1")
 	if err != nil {
@@ -37,7 +38,7 @@ func TestGetCountDefaultsMissingUsersToZero(t *testing.T) {
 }
 
 func TestIncrementStartsNewCountersAtOne(t *testing.T) {
-	service := counter.NewService(&fakeRepository{rows: map[string]int{"user-1": 41}})
+	service := counterservice.NewService(&fakeRepository{rows: map[string]int{"user-1": 41}})
 
 	first, err := service.Increment(context.Background(), "user-1")
 	if err != nil {

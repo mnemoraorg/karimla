@@ -18,7 +18,7 @@ import (
 	"github.com/mnemoraorg/karimla/apps/api/internal/config"
 	deliveryhttp "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http"
 	v1 "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http/v1"
-	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
+	counterservice "github.com/mnemoraorg/karimla/apps/api/internal/domain/counter/service"
 	apihandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api"
 )
 
@@ -59,7 +59,7 @@ func New(cfg config.Config) (*Application, error) {
 	var dependencies v1.Dependencies
 	if store != nil {
 		sessionClient := betterauth.NewSessionClient(cfg.AuthBaseURL)
-		service := counter.NewService(store.Counters())
+		service := counterservice.NewService(store.Counters())
 		handlers := apihandler.New(service)
 		dependencies = v1.Dependencies{Handlers: handlers, Auth: sessionClient}
 	}

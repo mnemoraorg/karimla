@@ -11,7 +11,7 @@ import (
 	httpv1 "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http/v1"
 	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
 	counterservice "github.com/mnemoraorg/karimla/apps/api/internal/domain/counter/service"
-	apihandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api"
+	counterhandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api/counter"
 	"github.com/mnemoraorg/karimla/apps/api/internal/shared"
 )
 
@@ -44,7 +44,7 @@ func (stubValidator) Validate(_ context.Context, cookie, _ string) (shared.Princ
 func TestCounterRoutesRequireAndServeSession(t *testing.T) {
 	app := fiber.New()
 	httpv1.Register(app.Group("/api"), httpv1.Dependencies{
-		Handlers: apihandler.New(counterservice.NewService(&fakeRepository{rows: map[string]int{}})),
+		Handlers: counterhandler.New(counterservice.NewService(&fakeRepository{rows: map[string]int{}})),
 		Auth:     stubValidator{},
 	})
 

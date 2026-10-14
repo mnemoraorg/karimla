@@ -9,7 +9,7 @@ apps/api/
 ├── internal/config/config.go  environment parsing and validation
 ├── internal/delivery/http/route.go        /api group registration
 ├── internal/delivery/http/v1/router.go    /api/v1 routes and middleware wiring
-├── internal/handler/<area>/   one file per HTTP operation area (health, counter)
+├── internal/handler/api/<area>/   one file per HTTP operation (counter/get.go, counter/increment.go, health/get.go)
 ├── internal/domain/<feature>/ models, errors, repository ports, plus service/ (below)
 ├── internal/adapter/<name>/   Ent/PostgreSQL and external-service implementations
 ├── internal/middleware/<name>/ cross-cutting request behavior (auth, limits, IDs)

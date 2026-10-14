@@ -19,7 +19,7 @@ import (
 	deliveryhttp "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http"
 	v1 "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http/v1"
 	counterservice "github.com/mnemoraorg/karimla/apps/api/internal/domain/counter/service"
-	apihandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api"
+	counterhandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api/counter"
 )
 
 type Application struct {
@@ -60,7 +60,7 @@ func New(cfg config.Config) (*Application, error) {
 	if store != nil {
 		sessionClient := betterauth.NewSessionClient(cfg.AuthBaseURL)
 		service := counterservice.NewService(store.Counters())
-		handlers := apihandler.New(service)
+		handlers := counterhandler.New(service)
 		dependencies = v1.Dependencies{Handlers: handlers, Auth: sessionClient}
 	}
 	deliveryhttp.Register(server, dependencies)

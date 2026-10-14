@@ -2,13 +2,13 @@ package v1
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/mnemoraorg/karimla/apps/api/internal/handler/api"
-	healthhandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/health"
+	counterhandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api/counter"
+	healthhandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api/health"
 	authmiddleware "github.com/mnemoraorg/karimla/apps/api/internal/middleware/auth"
 )
 
 type Dependencies struct {
-	Handlers *api.Handlers
+	Handlers *counterhandler.Handlers
 	Auth     authmiddleware.Validator
 }
 

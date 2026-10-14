@@ -57,6 +57,15 @@ next-env.d.ts
 # Generated auth schema output
 apps/auth/db/schema.sql
 
+# Go API build output and generated Ent client
+apps/api/bin/
+apps/api/ent/
+!apps/api/ent/schema/
+!apps/api/ent/schema/**
+!apps/api/ent/generate.go
+!apps/api/ent/migrate/migrations/
+!apps/api/ent/migrate/migrations/**
+
 # Databases and local data
 pgdata/
 postgres-data/

@@ -2,7 +2,8 @@
 
 import type * as React from "react"
 
-import { Button } from "@packages/ui-w/shared/button/button"
+import { DecrementButton } from "@/components/pages/home/_button/decrement-button"
+import { IncrementButton } from "@/components/pages/home/_button/increment-button"
 import { useCounter, useDecrementCounter, useIncrementCounter } from "@/hooks/api/use-counter"
 
 export function KarimlaCounter(): React.ReactElement {
@@ -16,24 +17,12 @@ export function KarimlaCounter(): React.ReactElement {
       <p className="text-muted-foreground text-sm">You have said karimla</p>
       <p className="text-6xl font-semibold tabular-nums">{counter.data ?? 0}</p>
       <div className="flex w-full max-w-xs gap-3">
-        <Button
-          aria-label="Count one fewer karimla"
-          className="flex-1"
-          size="lg"
+        <DecrementButton disabled={isPending} onClick={() => decrement.mutate()} />
+        <IncrementButton
           disabled={isPending}
-          onClick={() => decrement.mutate()}
-        >
-          −
-        </Button>
-        <Button
-          aria-label="Count one more karimla"
-          className="flex-1"
-          size="lg"
-          disabled={isPending}
+          pending={increment.isPending}
           onClick={() => increment.mutate()}
-        >
-          {increment.isPending ? "Counting…" : "+"}
-        </Button>
+        />
       </div>
       {(counter.error || increment.error || decrement.error) && (
         <p className="text-destructive text-center text-sm" role="alert">

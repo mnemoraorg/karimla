@@ -18,10 +18,20 @@ apps/web/
 │   │       └── page.tsx
 │   └── (protected)/
 │       └── page.tsx
+├── api/
+│   ├── client.ts
+│   ├── counter.ts
+│   └── auth/
+│       ├── client.ts
+│       ├── send-otp.ts
+│       └── sign-in.ts
 ├── components/
 │   └── pages/
 │       ├── home/
-│       │   └── karimla-counter.tsx
+│       │   ├── karimla-counter.tsx
+│       │   └── _button/
+│       │       ├── decrement-button.tsx
+│       │       └── increment-button.tsx
 │       └── login/
 │           ├── _fields/
 │           │   ├── login-field.tsx
@@ -30,6 +40,7 @@ apps/web/
 │               └── login-form.tsx
 ├── hooks/
 │   └── api/
+│       ├── use-counter.ts
 │       └── auth/
 │           ├── use-send-otp.ts
 │           └── use-sign-in.ts
@@ -52,7 +63,7 @@ apps/web/
 Responsibilities:
 
 - `app/` owns routable pages only; `(auth)` and `(protected)` group by access, enforced by `lib/auth/` guards.
-- `components/pages/<page>/` owns page-specific UI; underscore-prefixed `_form/` and `_fields/` are non-routable implementation pieces.
+- `components/pages/<page>/` owns page-specific UI; underscore-prefixed `_form/`, `_fields/`, and `_button/` are non-routable implementation pieces, one component per file.
 - `api/` owns HTTP request functions and error mapping; `hooks/api/` owns React Query wrappers.
 - `lib/auth/` owns server session reads (`session.ts`, Next imports allowed) and the pure session mapper (`session-user.ts`, no Next imports so `bun test` can load it).
 - `providers/` owns shared client providers.

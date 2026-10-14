@@ -2,9 +2,10 @@
 
 import type * as React from "react"
 
+import { useCounter, useDecrementCounter, useIncrementCounter } from "@/hooks/api/use-counter"
+
 import { DecrementButton } from "@/components/pages/home/_button/decrement-button"
 import { IncrementButton } from "@/components/pages/home/_button/increment-button"
-import { useCounter, useDecrementCounter, useIncrementCounter } from "@/hooks/api/use-counter"
 
 export function KarimlaCounter(): React.ReactElement {
   const counter = useCounter()

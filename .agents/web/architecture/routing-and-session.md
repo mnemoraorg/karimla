@@ -21,4 +21,4 @@
 3. Code step posts through `useSignInWithOtp` → `POST /sign-in/email-otp`; on success the pending email is cleared and the browser replaces to `/`, picking up the session cookie.
 4. Reloading or navigating back on `?step=verify` restores the code step from session storage; a verify URL with no stored email stays on the email step.
 
-- "Resend code" reuses the stored email; "use a different email" clears storage and the query param.
+- "Resend code" reuses the stored email and is gated by a 60s cooldown persisted in local storage (restored after refresh) and enforced server-side by the plugin rate limit; "use a different email" clears storage and the query param.

@@ -63,6 +63,7 @@ export const auth = betterAuth({
       disableSignUp: false,
       expiresIn: 600,
       otpLength: 6,
+      rateLimit: { max: 1, window: 60 },
       sendVerificationOnSignUp: true,
       storeOTP: "hashed",
       sendVerificationOTP: (data) => emailSender.sendVerificationOtp(data),

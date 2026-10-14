@@ -45,6 +45,7 @@ Responsibilities:
 - `config/` validates environment values and maps them to typed configuration.
 - `db/` owns the auth service's BetterAuth schema migration runner, including the camelCase-to-snake_case column rename.
 - `lib/load-config.ts` contains only shared config-loading behavior.
+- `lib/logger.ts` contains only structured JSON event logging, email masking, and error describing.
 - Shared type-only modules are always named `_types.ts`, never `types.ts`, so they sort before runtime modules.
 - Directory composition modules are always named `_index.ts`, never `index.ts`, so they sort before runtime modules.
 - Keep one exported function per focused module; compose functions from a separate module when a higher-level operation needs them.

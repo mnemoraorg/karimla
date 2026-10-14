@@ -1,4 +1,5 @@
 import { config } from "../config/_index"
+import { describeError, logger } from "../lib/logger"
 import { auth, database } from "./auth"
 import { createApp } from "./http"
 
@@ -29,16 +30,17 @@ export async function startServer() {
 
   process.once("SIGINT", shutdown)
   process.once("SIGTERM", shutdown)
-  console.info(`[auth] listening on ${config.auth.url}`)
+  logger.info("auth.server.started", {
+    environment: config.app.environment,
+    port: config.app.port,
+  })
 
   return server
 }
 
 if (import.meta.main) {
   startServer().catch((error: unknown) => {
-    console.error(
-      `[auth] could not start: ${error instanceof Error ? error.message : "unknown error"}`,
-    )
+    logger.error("auth.server.start.failed", { error: describeError(error) })
     process.exitCode = 1
   })
 }

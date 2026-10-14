@@ -9,8 +9,6 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// Counter maps public.counters: one row per BetterAuth user holding their
-// karimla count. The row ID is the opaque BetterAuth user ID.
 type Counter struct {
 	ent.Schema
 }

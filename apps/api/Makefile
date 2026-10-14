@@ -40,9 +40,6 @@ atlas/new:
 	@test -n "$(name)" || (echo "usage: make atlas/new name=..."; exit 1)
 	$(ATLAS) migrate new --dir $(ATLAS_DIR) "$(name)"
 
-# The database is shared with the BetterAuth auth schema, which Atlas does not
-# manage, so applies allow unmanaged schemas. Atlas still tracks its own
-# revisions and only runs the migrations in $(ATLAS_DIR).
 atlas/apply:
 	@test -n "$(DATABASE_URL)" || (echo "DATABASE_URL is required"; exit 1)
 	@$(ATLAS) migrate apply --dir $(ATLAS_DIR) --url "$(DATABASE_URL)" --allow-dirty

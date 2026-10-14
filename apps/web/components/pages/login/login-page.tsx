@@ -1,13 +1,11 @@
 "use client"
 
 import type * as React from "react"
-import { Google } from "@thesvg/react"
 
 import { Button } from "@packages/ui-w/shared/button/button"
 import { Field } from "@packages/ui-w/shared/field/field"
 import { FieldLabel } from "@packages/ui-w/shared/field/field-label"
 import { Input } from "@packages/ui-w/shared/input/input"
-import { Separator } from "@packages/ui-w/shared/separator/separator"
 
 export function LoginPage(): React.ReactElement {
   function handleEmailSubmit(event: React.SyntheticEvent<HTMLFormElement>): void {
@@ -22,17 +20,6 @@ export function LoginPage(): React.ReactElement {
             <p className="text-sm font-medium">Karimla</p>
             <h1 className="text-xl font-semibold">Welcome Back</h1>
             <p className="text-muted-foreground text-sm">Please login to your account</p>
-          </div>
-
-          <Button className="w-full" type="button" variant="outline">
-            <Google className="h-6 w-6" />
-            Continue with Google
-          </Button>
-
-          <div className="flex w-full items-center gap-3">
-            <Separator className="flex-1" />
-            <span className="text-muted-foreground text-xs">or</span>
-            <Separator className="flex-1" />
           </div>
 
           <form className="flex w-full flex-col gap-4" onSubmit={handleEmailSubmit}>

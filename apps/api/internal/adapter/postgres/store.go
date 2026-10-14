@@ -5,9 +5,9 @@ import (
 
 	"entgo.io/ent/dialect"
 	dialectsql "entgo.io/ent/dialect/sql"
-	entclient "github.com/mnemoraorg/karimla/apps/api/ent"
-	"github.com/mnemoraorg/karimla/apps/api/internal/adapter/postgres/repository"
-	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
+	entclient "github.com/mnemoraorg/yappi/apps/api/ent"
+	"github.com/mnemoraorg/yappi/apps/api/internal/adapter/postgres/repository"
+	"github.com/mnemoraorg/yappi/apps/api/internal/domain/counter"
 )
 
 type Store struct {

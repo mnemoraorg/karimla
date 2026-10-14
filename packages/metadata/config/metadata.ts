@@ -3,10 +3,10 @@ import type { Metadata } from "next"
 import { baseKeywords } from "./keywords"
 export { baseKeywords } from "./keywords"
 
-const defaultName = "Karimla"
+const defaultName = "Yappi"
 const defaultDescription =
   "A playful word-counting game that tracks how many times each person says karimla."
-const defaultUrl = "https://karimla.mnemora.org"
+const defaultUrl = "https://yappi.mnemora.org"
 
 export interface MetadataConfig extends Omit<Metadata, "description" | "keywords"> {
   name?: string

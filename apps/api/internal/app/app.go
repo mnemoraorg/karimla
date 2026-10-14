@@ -13,13 +13,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/mnemoraorg/karimla/apps/api/internal/adapter/betterauth"
-	postgresadapter "github.com/mnemoraorg/karimla/apps/api/internal/adapter/postgres"
-	"github.com/mnemoraorg/karimla/apps/api/internal/config"
-	deliveryhttp "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http"
-	v1 "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http/v1"
-	counterservice "github.com/mnemoraorg/karimla/apps/api/internal/domain/counter/service"
-	counterhandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api/counter"
+	"github.com/mnemoraorg/yappi/apps/api/internal/adapter/betterauth"
+	postgresadapter "github.com/mnemoraorg/yappi/apps/api/internal/adapter/postgres"
+	"github.com/mnemoraorg/yappi/apps/api/internal/config"
+	deliveryhttp "github.com/mnemoraorg/yappi/apps/api/internal/delivery/http"
+	v1 "github.com/mnemoraorg/yappi/apps/api/internal/delivery/http/v1"
+	counterservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/counter/service"
+	counterhandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/counter"
 )
 
 type Application struct {
@@ -29,7 +29,7 @@ type Application struct {
 }
 
 func New(cfg config.Config) (*Application, error) {
-	server := fiber.New(fiber.Config{AppName: "karimla-api"})
+	server := fiber.New(fiber.Config{AppName: "yappi-api"})
 	server.Use(logger.New())
 	if len(cfg.CORS.AllowedOrigins) > 0 {
 		server.Use(cors.New(cors.Config{

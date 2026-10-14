@@ -7,7 +7,7 @@ import { useCounter, useDecrementCounter, useIncrementCounter } from "@/hooks/ap
 import { DecrementButton } from "@/components/pages/home/_button/decrement-button"
 import { IncrementButton } from "@/components/pages/home/_button/increment-button"
 
-export function KarimlaCounter(): React.ReactElement {
+export function YappiCounter(): React.ReactElement {
   const counter = useCounter()
   const increment = useIncrementCounter()
   const decrement = useDecrementCounter()

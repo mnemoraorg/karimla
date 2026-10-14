@@ -1,4 +1,4 @@
-module github.com/mnemoraorg/karimla/apps/api
+module github.com/mnemoraorg/yappi/apps/api
 
 go 1.26.3
 

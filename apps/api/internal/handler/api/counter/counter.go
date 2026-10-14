@@ -4,9 +4,9 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
-	counterservice "github.com/mnemoraorg/karimla/apps/api/internal/domain/counter/service"
-	"github.com/mnemoraorg/karimla/apps/api/internal/shared/response"
+	"github.com/mnemoraorg/yappi/apps/api/internal/domain/counter"
+	counterservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/counter/service"
+	"github.com/mnemoraorg/yappi/apps/api/internal/shared/response"
 )
 
 type CounterResponse struct {

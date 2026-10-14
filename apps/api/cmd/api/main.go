@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/mnemoraorg/karimla/apps/api/internal/app"
-	"github.com/mnemoraorg/karimla/apps/api/internal/config"
+	"github.com/mnemoraorg/yappi/apps/api/internal/app"
+	"github.com/mnemoraorg/yappi/apps/api/internal/config"
 )
 
 func main() {

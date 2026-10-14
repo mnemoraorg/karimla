@@ -24,7 +24,7 @@ describe("CloudflareEmailSender", () => {
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
         to: "user@example.com",
-        subject: "Your Karimla verification code",
+        subject: "Your Yappi verification code",
         html: expect.stringContaining("123456"),
       }),
     )

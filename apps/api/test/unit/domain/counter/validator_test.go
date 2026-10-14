@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
+	"github.com/mnemoraorg/yappi/apps/api/internal/domain/counter"
 )
 
 func TestValidateUserIDRejectsBlankOwners(t *testing.T) {

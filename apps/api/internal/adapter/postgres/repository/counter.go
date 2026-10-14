@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
-	"github.com/mnemoraorg/karimla/apps/api/ent"
-	counterent "github.com/mnemoraorg/karimla/apps/api/ent/counter"
-	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
+	"github.com/mnemoraorg/yappi/apps/api/ent"
+	counterent "github.com/mnemoraorg/yappi/apps/api/ent/counter"
+	"github.com/mnemoraorg/yappi/apps/api/internal/domain/counter"
 )
 
 type Counter struct {

@@ -8,11 +8,11 @@ import (
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
-	httpv1 "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http/v1"
-	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
-	counterservice "github.com/mnemoraorg/karimla/apps/api/internal/domain/counter/service"
-	counterhandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api/counter"
-	"github.com/mnemoraorg/karimla/apps/api/internal/shared"
+	httpv1 "github.com/mnemoraorg/yappi/apps/api/internal/delivery/http/v1"
+	"github.com/mnemoraorg/yappi/apps/api/internal/domain/counter"
+	counterservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/counter/service"
+	counterhandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/counter"
+	"github.com/mnemoraorg/yappi/apps/api/internal/shared"
 )
 
 type fakeRepository struct {

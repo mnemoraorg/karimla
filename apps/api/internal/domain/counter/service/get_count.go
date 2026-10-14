@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
+	"github.com/mnemoraorg/yappi/apps/api/internal/domain/counter"
 )
 
 func (s *Service) GetCount(ctx context.Context, authUserID string) (int, error) {

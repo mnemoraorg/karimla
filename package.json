@@ -1,5 +1,5 @@
 {
-  "name": "karimla",
+  "name": "yappi",
   "private": true,
   "scripts": {
     "build": "turbo run build",

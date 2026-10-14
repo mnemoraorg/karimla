@@ -1,4 +1,4 @@
-# Karimla API instructions
+# Yappi API instructions
 
 ## Required context
 

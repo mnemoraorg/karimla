@@ -12,7 +12,7 @@ const authDatabase = new Kysely({ dialect: new PostgresDialect({ pool: database 
 const emailSender = new CloudflareEmailSender(config.email)
 
 export const auth = betterAuth({
-  appName: "Karimla",
+  appName: "Yappi",
   baseURL: config.auth.url,
   basePath: "/api/v1/auth",
   secret: config.auth.secret,

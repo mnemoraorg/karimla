@@ -25,7 +25,7 @@ Server components forward request cookies to BetterAuth; client requests use `cr
 
 ## Session and routes
 
-- `app/(protected)/` requires a session (`requireKarimlaSession`) and redirects to `/login` without one.
+- `app/(protected)/` requires a session (`requireYappiSession`) and redirects to `/login` without one.
 - `app/(auth)/login` redirects to `/` when a session already exists.
 - The login form is email → 6-digit code; the pending email survives refresh through `?step=verify` plus session storage and is cleared on verify or email change.
 - Treat any auth outage as logged-out (redirect to `/login`); there is no separate error page.

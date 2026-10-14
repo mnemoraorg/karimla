@@ -1,6 +1,6 @@
 package service
 
-import "github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
+import "github.com/mnemoraorg/yappi/apps/api/internal/domain/counter"
 
 type Service struct {
 	repository counter.Repository

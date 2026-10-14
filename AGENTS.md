@@ -1,4 +1,4 @@
-# Karimla repository instructions
+# Yappi repository instructions
 
 ## Scope and routing
 

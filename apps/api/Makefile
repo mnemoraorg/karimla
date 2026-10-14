@@ -47,7 +47,7 @@ atlas/apply:
 build: generate
 	go build ./...
 	mkdir -p bin
-	go build -o ./bin/karimla-api ./cmd/api
+	go build -o ./bin/yappi-api ./cmd/api
 
 test: generate
 	go test ./...

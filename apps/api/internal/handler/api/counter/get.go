@@ -2,8 +2,8 @@ package counter
 
 import (
 	"github.com/gofiber/fiber/v2"
-	authmiddleware "github.com/mnemoraorg/karimla/apps/api/internal/middleware/auth"
-	"github.com/mnemoraorg/karimla/apps/api/internal/shared/response"
+	authmiddleware "github.com/mnemoraorg/yappi/apps/api/internal/middleware/auth"
+	"github.com/mnemoraorg/yappi/apps/api/internal/shared/response"
 )
 
 func (h *Handlers) GetCounter(c *fiber.Ctx) error {

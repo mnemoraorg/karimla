@@ -59,7 +59,7 @@ Keep package imports first, then add one blank line before relative internal imp
 
 ## Future custom feature structure
 
-When Karimla owns a real identity behavior that BetterAuth does not provide (for example invitations), add only the structure that feature needs:
+When Yappi owns a real identity behavior that BetterAuth does not provide (for example invitations), add only the structure that feature needs:
 
 ```text
 src/<feature>/

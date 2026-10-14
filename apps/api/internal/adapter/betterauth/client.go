@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mnemoraorg/karimla/apps/api/internal/shared"
+	"github.com/mnemoraorg/yappi/apps/api/internal/shared"
 )
 
 var ErrUnavailable = errors.New("authentication service unavailable")

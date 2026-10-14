@@ -2,9 +2,9 @@ package v1
 
 import (
 	"github.com/gofiber/fiber/v2"
-	counterhandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api/counter"
-	healthhandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api/health"
-	authmiddleware "github.com/mnemoraorg/karimla/apps/api/internal/middleware/auth"
+	counterhandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/counter"
+	healthhandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/health"
+	authmiddleware "github.com/mnemoraorg/yappi/apps/api/internal/middleware/auth"
 )
 
 type Dependencies struct {

@@ -1,9 +1,9 @@
 import { authRequest } from "./client"
-import { toKarimlaSession, type KarimlaSession } from "@/lib/auth/session-user"
+import { toYappiSession, type YappiSession } from "@/lib/auth/session-user"
 
-export async function getSession(): Promise<KarimlaSession | null> {
+export async function getSession(): Promise<YappiSession | null> {
   const response = await authRequest("/get-session")
 
   if (!response.ok) return null
-  return toKarimlaSession(await response.json().catch(() => null))
+  return toYappiSession(await response.json().catch(() => null))
 }

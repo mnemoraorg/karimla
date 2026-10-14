@@ -3,7 +3,7 @@ package config_test
 import (
 	"testing"
 
-	"github.com/mnemoraorg/karimla/apps/api/internal/config"
+	"github.com/mnemoraorg/yappi/apps/api/internal/config"
 )
 
 func TestLoadDefaultsToAPIPort(t *testing.T) {

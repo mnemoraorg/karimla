@@ -1,4 +1,4 @@
-# Karimla Go API guidance
+# Yappi Go API guidance
 
 ## Scope
 

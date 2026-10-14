@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
-	httpdelivery "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http"
+	httpdelivery "github.com/mnemoraorg/yappi/apps/api/internal/delivery/http"
 )
 
 func TestRegisterHealthRoute(t *testing.T) {

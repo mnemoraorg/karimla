@@ -5,12 +5,12 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/mnemoraorg/karimla/apps/api/internal/adapter/betterauth"
-	"github.com/mnemoraorg/karimla/apps/api/internal/shared"
-	"github.com/mnemoraorg/karimla/apps/api/internal/shared/response"
+	"github.com/mnemoraorg/yappi/apps/api/internal/adapter/betterauth"
+	"github.com/mnemoraorg/yappi/apps/api/internal/shared"
+	"github.com/mnemoraorg/yappi/apps/api/internal/shared/response"
 )
 
-const principalKey = "karimla.principal"
+const principalKey = "yappi.principal"
 
 type Validator interface {
 	Validate(context.Context, string, string) (shared.Principal, bool, error)

@@ -1,14 +1,14 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
-import { toKarimlaSession, type KarimlaSession } from "./session-user"
+import { toYappiSession, type YappiSession } from "./session-user"
 
 const authBaseUrl = (
   process.env.NEXT_PUBLIC_AUTH_URL ??
   (process.env.NODE_ENV === "development" ? "http://localhost:35081" : "")
 ).replace(/\/$/, "")
 
-async function loadSession(): Promise<KarimlaSession | null> {
+async function loadSession(): Promise<YappiSession | null> {
   if (!authBaseUrl) return null
 
   const cookieHeader = (await cookies()).toString()
@@ -22,17 +22,17 @@ async function loadSession(): Promise<KarimlaSession | null> {
     })
     if (!response.ok) return null
 
-    return toKarimlaSession(await response.json().catch(() => null))
+    return toYappiSession(await response.json().catch(() => null))
   } catch {
     return null
   }
 }
 
-export async function getKarimlaSession(): Promise<KarimlaSession | null> {
+export async function getYappiSession(): Promise<YappiSession | null> {
   return loadSession()
 }
 
-export async function requireKarimlaSession(): Promise<KarimlaSession> {
+export async function requireYappiSession(): Promise<YappiSession> {
   const session = await loadSession()
   if (!session) redirect("/login")
   return session

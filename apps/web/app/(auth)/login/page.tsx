@@ -1,6 +1,11 @@
+import { redirect } from "next/navigation"
+
+import { getKarimlaSession } from "@/lib/auth/session"
 import { LoginForm } from "@/components/pages/login/_form/login-form"
 
-export default function Page() {
+export default async function Page() {
+  if (await getKarimlaSession()) redirect("/")
+
   return (
     <div className="flex min-h-svh flex-col">
       <header className="flex items-center justify-center py-6">

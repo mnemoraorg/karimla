@@ -24,6 +24,7 @@ Use one blank line between groups. Use the configured `@/` alias for cross-direc
 - HTTP request functions belong under `api/` (e.g. `api/auth/client.ts`, `api/auth/send-otp.ts`, `api/auth/sign-in.ts`).
 - React Query wrappers belong under `hooks/api/` (e.g. `hooks/api/auth/use-send-otp.ts`, `hooks/api/auth/use-sign-in.ts`).
 - Shared client providers belong under `providers/` (e.g. `providers/query-provider.tsx`).
+- Server route guards belong under `lib/auth/` (`session.ts` reads the BetterAuth session, `session-user.ts` maps it with no Next imports so bun tests can cover it).
 - Components call hooks; never call API endpoints or `fetch` directly from a component.
 - Reuse existing `@packages/ui-w` primitives before creating new web UI primitives.
 - The login flow posts to the auth service at `NEXT_PUBLIC_AUTH_URL` (local default `http://localhost:35081`) and uses `/api/v1/auth` paths.

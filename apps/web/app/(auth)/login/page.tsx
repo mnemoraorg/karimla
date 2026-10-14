@@ -18,9 +18,7 @@ export default function Page() {
           <LoginForm />
 
           <p className="text-muted-foreground text-center text-sm">
-            Never counted a karimla?
-            <br />
-            The next chilly outburst still counts.
+            First chill? You&apos;re a new counter. Second chill? We already know you.
           </p>
         </div>
       </div>

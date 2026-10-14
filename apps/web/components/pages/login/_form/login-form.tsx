@@ -5,50 +5,42 @@ import type * as React from "react"
 
 import { Button } from "@packages/ui-w/shared/button/button"
 import { LoginField } from "@/components/pages/login/_fields/login-field"
+import { useSendMagicLink } from "@/hooks/api/auth/use-send-magic-link"
 
 export function LoginForm(): React.ReactElement {
+  const sendMagicLink = useSendMagicLink()
   const [message, setMessage] = useState("")
   const [error, setError] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  async function handleEmailSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
+  function handleEmailSubmit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault()
     setMessage("")
     setError("")
-    setIsSubmitting(true)
+    sendMagicLink.reset()
 
-    try {
-      const email = new FormData(event.currentTarget).get("email")
-      const authUrl =
-        process.env.NEXT_PUBLIC_AUTH_URL ??
-        (process.env.NODE_ENV === "development" ? "http://localhost:35081" : undefined)
-
-      if (typeof email !== "string" || !authUrl) throw new Error("Invalid sign-in request")
-
-      const response = await fetch(`${authUrl}/api/v1/auth/sign-in/magic-link`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          email,
-          callbackURL: new URL("/", window.location.origin).toString(),
-        }),
-      })
-
-      if (!response.ok) throw new Error("Could not send sign-in link")
-      setMessage("Check your email for a sign-in link.")
-    } catch {
-      setError("We couldn’t send your sign-in link. Please try again.")
-    } finally {
-      setIsSubmitting(false)
+    const email = new FormData(event.currentTarget).get("email")
+    if (typeof email !== "string") {
+      setError("Enter your email address.")
+      return
     }
+
+    sendMagicLink.mutate(
+      {
+        email,
+        callbackURL: new URL("/", window.location.origin).toString(),
+      },
+      {
+        onSuccess: () => setMessage("Check your email for a sign-in link."),
+        onError: (requestError) => setError(requestError.message),
+      },
+    )
   }
 
   return (
     <form className="flex w-full flex-col gap-4" onSubmit={handleEmailSubmit}>
       <LoginField />
-      <Button className="w-full" disabled={isSubmitting} type="submit">
-        {isSubmitting ? "Sending link…" : "Send sign-in link"}
+      <Button className="w-full" disabled={sendMagicLink.isPending} type="submit">
+        {sendMagicLink.isPending ? "Sending link…" : "Send sign-in link"}
       </Button>
       {message && (
         <p className="text-muted-foreground text-center text-sm" role="status">

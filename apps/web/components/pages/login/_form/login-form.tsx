@@ -121,21 +121,18 @@ export function LoginForm(): React.ReactElement {
           </p>
         )}
         <div className="flex items-center justify-center gap-4 text-sm">
-          <button
-            className="text-muted-foreground hover:text-foreground"
+          <Button
             disabled={sendOtp.isPending || signIn.isPending}
+            size="sm"
+            variant="link"
             onClick={handleResendCode}
             type="button"
           >
             {sendOtp.isPending ? "Sending…" : "Resend code"}
-          </button>
-          <button
-            className="text-muted-foreground hover:text-foreground"
-            onClick={useDifferentEmail}
-            type="button"
-          >
+          </Button>
+          <Button size="sm" variant="link" onClick={useDifferentEmail} type="button">
             Use a different email
-          </button>
+          </Button>
         </div>
       </div>
     )

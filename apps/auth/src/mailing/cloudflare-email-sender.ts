@@ -4,16 +4,17 @@ import Cloudflare from "cloudflare"
 
 import type { EmailConfig } from "../../config/_types"
 
-export interface MagicLinkMessage {
+export interface VerificationOtpMessage {
   email: string
-  url: string
+  otp: string
+  type: "sign-in" | "email-verification" | "forget-password" | "change-email"
 }
 
 type CloudflareEmailClient = {
   emailSending: Pick<Cloudflare["emailSending"], "send">
 }
 
-const magicLinkTemplate = new URL("../../templates/magic-link.html", import.meta.url)
+const verificationOtpTemplate = new URL("../../templates/verification-otp.html", import.meta.url)
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (character) => {
@@ -36,10 +37,10 @@ export class CloudflareEmailSender {
     }),
   ) {}
 
-  async sendMagicLink({ email, url }: MagicLinkMessage): Promise<void> {
-    const html = (await readFile(magicLinkTemplate, "utf8")).replaceAll(
-      "{{magic_link}}",
-      escapeHtml(url),
+  async sendVerificationOtp({ email, otp }: VerificationOtpMessage): Promise<void> {
+    const html = (await readFile(verificationOtpTemplate, "utf8")).replaceAll(
+      "{{otp}}",
+      escapeHtml(otp),
     )
 
     try {
@@ -47,8 +48,8 @@ export class CloudflareEmailSender {
         account_id: this.config.accountId,
         from: { address: this.config.from, name: "Karimla" },
         html,
-        subject: "Your sign-in link for Karimla",
-        text: `Sign in to Karimla with this link: ${url}\n\nThis link expires in 10 minutes.`,
+        subject: "Your Karimla verification code",
+        text: `Your Karimla verification code is ${otp}. It expires in 10 minutes.`,
         to: email,
       })
 
@@ -60,7 +61,7 @@ export class CloudflareEmailSender {
         throw new Error("Email delivery failed")
       }
     } catch {
-      throw new Error("Magic-link email delivery failed")
+      throw new Error("Verification email delivery failed")
     }
   }
 }

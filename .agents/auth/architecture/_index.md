@@ -19,7 +19,7 @@ Bun HTTP server
         ↓
 Hono HTTP/CORS boundary
         ↓
-BetterAuth magic-link plugin
+BetterAuth email-OTP plugin
         ↓
 Kysely/pg
         ↓

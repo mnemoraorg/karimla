@@ -1,11 +1,11 @@
 # Identity and boundaries
 
-BetterAuth is Karimla's canonical identity owner. It owns users, accounts, sessions, verification records, and opaque identity IDs. Sign-in is email-only through the `magicLink` plugin: one link request both signs up a new email and signs in an existing one. Passwords and OTP codes are out of scope.
+BetterAuth is Karimla's canonical identity owner. It owns users, accounts, sessions, verification records, and opaque identity IDs. Sign-in is email-only through the `emailOTP` plugin: a 6-digit code both signs up a new email and signs in an existing one. Passwords and magic links are out of scope.
 
 The Go API owns counter and friends data only. It consumes the BetterAuth user ID as an opaque string and must not duplicate identity tables or credentials. The API must not read BetterAuth's database directly.
 
 ```text
-Hono HTTP/CORS boundary → BetterAuth magic-link → Kysely/pg → PostgreSQL auth schema
+Hono HTTP/CORS boundary → BetterAuth email-OTP → Kysely/pg → PostgreSQL auth schema
 ```
 
 ## Ownership
@@ -25,6 +25,6 @@ Hono HTTP/CORS boundary → BetterAuth magic-link → Kysely/pg → PostgreSQL a
 - Config modules must not create feature behavior or read environment variables outside the config boundary.
 - The API must not manage BetterAuth's `auth` schema.
 - Tests must not require developer-local credentials unless they are explicit integration tests.
-- Email sending must never log magic-link URLs, tokens, or credentials.
+- Email sending must never log OTP codes or credentials.
 
 Do not add MVC, application/domain/port layers, or interfaces for symmetry. Add a custom boundary only when Karimla owns a real behavior that cannot remain in BetterAuth or a thin adapter.

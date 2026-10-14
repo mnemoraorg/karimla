@@ -24,12 +24,12 @@ describe("auth HTTP app", () => {
       Response.json({ path: new URL(request.url).pathname }),
     )
     const response = await createApp(handler, corsConfig).request(
-      "/api/v1/auth/sign-in/magic-link",
+      "/api/v1/auth/email-otp/send-verification-otp",
       { method: "POST" },
     )
 
     expect(response.status).toBe(200)
-    expect(await response.json()).toEqual({ path: "/api/v1/auth/sign-in/magic-link" })
+    expect(await response.json()).toEqual({ path: "/api/v1/auth/email-otp/send-verification-otp" })
     expect(handler).toHaveBeenCalledOnce()
   })
 

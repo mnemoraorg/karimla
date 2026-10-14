@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth"
-import { magicLink } from "better-auth/plugins"
+import { emailOTP } from "better-auth/plugins"
 import { Kysely, PostgresDialect } from "kysely"
 import { Pool } from "pg"
 
@@ -58,11 +58,14 @@ export const auth = betterAuth({
   },
   emailAndPassword: { enabled: false },
   plugins: [
-    magicLink({
+    emailOTP({
+      allowedAttempts: 3,
       disableSignUp: false,
       expiresIn: 600,
-      storeToken: "hashed",
-      sendMagicLink: (data) => emailSender.sendMagicLink(data),
+      otpLength: 6,
+      sendVerificationOnSignUp: true,
+      storeOTP: "hashed",
+      sendVerificationOTP: (data) => emailSender.sendVerificationOtp(data),
     }),
   ],
 })

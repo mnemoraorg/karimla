@@ -12,7 +12,7 @@ BetterAuth is Karimla's canonical identity owner. It owns:
 - verification records
 - opaque identity IDs
 
-Sign-in is email-only via the BetterAuth `magicLink` plugin. There are no passwords and no email OTP. A new email signs up on first link request; an existing email signs in.
+Sign-in is email-only via the BetterAuth `emailOTP` plugin (6-digit code, 10-minute expiry, hashed storage). There are no passwords and no magic links. A new email signs up on first code verification; an existing email signs in.
 
 The Go API (planned, port `35080`) owns counter and friends data only. It consumes an opaque BetterAuth user ID and must not create a duplicate API `users` table or copy credentials.
 
@@ -27,14 +27,14 @@ Bun HTTP server
     ↓
 Hono HTTP/CORS boundary
     ↓
-BetterAuth magic-link handler
+BetterAuth email-OTP handler
     ↓
 Kysely/pg
     ↓
 PostgreSQL auth schema
 ```
 
-The Bun server owns transport concerns only: health, route delegation, process lifecycle, and safe configuration loading. BetterAuth owns authentication behavior and session semantics. PostgreSQL stores BetterAuth's identity and session records in the `auth` schema. Cloudflare Email delivers the magic link; it owns nothing about identity.
+The Bun server owns transport concerns only: health, route delegation, process lifecycle, and safe configuration loading. BetterAuth owns authentication behavior and session semantics. PostgreSQL stores BetterAuth's identity and session records in the `auth` schema. Cloudflare Email delivers the verification code; it owns nothing about identity.
 
 ## Configuration and secrets
 
@@ -43,7 +43,7 @@ The Bun server owns transport concerns only: health, route delegation, process l
 - Keep local values in `apps/auth/.env`; keep safe placeholders in `apps/auth/.env.example`.
 - Require a strong `BETTER_AUTH_SECRET` outside tests.
 - Keep trusted origins explicit and limited to known application origins.
-- Never log or expose database URLs, secrets, magic-link URLs, tokens, cookies, credentials, or session tokens.
+- Never log or expose database URLs, secrets, OTP codes, cookies, credentials, or session tokens.
 
 ## Persistence and migrations
 
@@ -57,7 +57,7 @@ The server fails fast at startup when PostgreSQL is unreachable or the auth tabl
 
 ## Email
 
-Magic links are sent through `src/mailing/cloudflare-email-sender.ts` using the static template in `templates/magic-link.html`. The sender address comes from `NO_REPLY_EMAIL`. Never log the link or token.
+Verification codes are sent through `src/mailing/cloudflare-email-sender.ts` using the static template in `templates/verification-otp.html`. The sender address comes from `NO_REPLY_EMAIL`. Never log the code.
 
 ## Testing
 
@@ -65,7 +65,7 @@ Tests follow the tiered layout under `apps/auth/test/`:
 
 - `test/unit/` contains pure configuration and sender tests and does not require PostgreSQL.
 - `test/integration/` contains HTTP boundary, health, and CORS tests.
-- `test/e2e/` contains magic-link sign-up/sign-in behavior tests using BetterAuth's in-memory adapter.
+- `test/e2e/` contains email-OTP sign-up/sign-in behavior tests using BetterAuth's in-memory adapter.
 - PostgreSQL persistence and real email delivery belong at an explicit integration boundary and must not require developer-local credentials.
 - Tests must verify opaque string IDs without asserting a particular ID format.
 

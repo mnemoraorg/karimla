@@ -11,7 +11,7 @@ export default function Page() {
           <div className="flex flex-col items-center gap-1 text-center">
             <h1 className="text-xl font-semibold">Did someone just say karimla?</h1>
             <p className="text-muted-foreground text-sm">
-              Log in to count every chilly outburst with your friends
+              Enter your email and we&apos;ll send you a 6-digit code to count with your friends
             </p>
           </div>
 

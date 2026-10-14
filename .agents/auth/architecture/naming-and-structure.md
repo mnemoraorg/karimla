@@ -21,7 +21,7 @@ apps/auth/
 │   └── load-config.ts
 ├── package.json
 ├── templates/
-│   └── magic-link.html
+│   └── verification-otp.html
 ├── src/
 │   ├── auth.ts
 │   ├── http.ts

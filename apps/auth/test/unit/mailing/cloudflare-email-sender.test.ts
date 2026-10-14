@@ -10,7 +10,7 @@ const config: EmailConfig = {
 }
 
 describe("CloudflareEmailSender", () => {
-  it("sends an escaped magic link to the requested address", async () => {
+  it("sends the verification code to the requested address", async () => {
     const send = vi.fn().mockResolvedValue({
       delivered: ["user@example.com"],
       queued: [],
@@ -19,19 +19,17 @@ describe("CloudflareEmailSender", () => {
     const client = { emailSending: { send } }
     const sender = new CloudflareEmailSender(config, client)
 
-    await sender.sendMagicLink({
-      email: "user@example.com",
-      url: "https://auth.example/verify?token=secret&callbackURL=https://app.example/",
-    })
+    await sender.sendVerificationOtp({ email: "user@example.com", otp: "123456", type: "sign-in" })
 
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
         to: "user@example.com",
-        subject: "Your sign-in link for Karimla",
+        subject: "Your Karimla verification code",
+        html: expect.stringContaining("123456"),
       }),
     )
     const email = send.mock.calls[0]![0] as { html: string }
-    expect(email.html.match(/token=secret&amp;callbackURL=/g)).toHaveLength(3)
+    expect(email.html).not.toContain("{{otp}}")
   })
 
   it("reports rejected delivery without exposing provider details", async () => {
@@ -43,7 +41,7 @@ describe("CloudflareEmailSender", () => {
     const sender = new CloudflareEmailSender(config, { emailSending: { send } })
 
     await expect(
-      sender.sendMagicLink({ email: "user@example.com", url: "https://auth.example/token" }),
-    ).rejects.toThrow("Magic-link email delivery failed")
+      sender.sendVerificationOtp({ email: "user@example.com", otp: "123456", type: "sign-in" }),
+    ).rejects.toThrow("Verification email delivery failed")
   })
 })

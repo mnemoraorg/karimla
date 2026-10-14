@@ -15,7 +15,7 @@ Environment variables are parsed by intent-specific schemas under `apps/auth/con
 
 `lib/load-config.ts` owns only the shared typed Zod schema-loading operation. Only the config boundary reads `process.env`.
 
-Keep local values in `apps/auth/.env` and safe placeholders in `.env.example`. Never log or commit database URLs, BetterAuth secrets, magic-link URLs, tokens, cookies, credentials, or session tokens.
+Keep local values in `apps/auth/.env` and safe placeholders in `.env.example`. Never log or commit database URLs, BetterAuth secrets, OTP codes, cookies, credentials, or session tokens.
 
 ## Request paths
 
@@ -36,4 +36,4 @@ Use explicit CORS origins with credentials. Do not add wildcard credentials beha
 
 ## Safe responses
 
-Configuration validation may fail fast at startup, but Zod details stay out of public responses. Return stable `404` responses for unknown routes. Never return SQL, credentials, session tokens, secrets, magic-link URLs, stack traces, or database URLs.
+Configuration validation may fail fast at startup, but Zod details stay out of public responses. Return stable `404` responses for unknown routes. Never return SQL, credentials, session tokens, secrets, OTP codes, stack traces, or database URLs.

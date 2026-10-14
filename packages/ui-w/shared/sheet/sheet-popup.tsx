@@ -33,7 +33,7 @@ export function SheetPopup({
       <SheetViewport side={side} variant={variant}>
         <SheetPrimitive.Popup
           className={cn(
-            "bg-popover text-popover-foreground relative flex max-h-full min-h-0 w-full min-w-0 flex-col transition-[opacity,translate] duration-200 ease-in-out will-change-transform not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 data-ending-style:opacity-0 data-starting-style:opacity-0 max-sm:before:hidden",
+            "bg-popover text-popover-foreground border-border relative flex max-h-full min-h-0 w-full min-w-0 flex-col transition-[opacity,translate] duration-200 ease-in-out will-change-transform not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 data-ending-style:opacity-0 data-starting-style:opacity-0 max-sm:before:hidden",
             side === "bottom" &&
               "row-start-2 border-t data-ending-style:translate-y-8 data-starting-style:translate-y-8",
             side === "top" &&

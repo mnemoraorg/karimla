@@ -14,8 +14,9 @@ import { SheetHeader } from "@packages/ui-w/shared/sheet/sheet-header"
 import { SheetPopup } from "@packages/ui-w/shared/sheet/sheet-popup"
 import { SheetTitle } from "@packages/ui-w/shared/sheet/sheet-title"
 import { SheetTrigger } from "@packages/ui-w/shared/sheet/sheet-trigger"
+import { SignOutButton } from "@/components/shared/_button/sign-out-button"
 
-export function UserMenu(): React.ReactElement | null {
+export function UserSheet(): React.ReactElement | null {
   const session = useSession()
   const signOut = useSignOut()
   const [error, setError] = useState("")
@@ -39,25 +40,21 @@ export function UserMenu(): React.ReactElement | null {
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{email}</SheetDescription>
         </SheetHeader>
-        <SheetFooter variant="bare" className="border-border mt-auto flex-col gap-2 border-t">
+        <SheetFooter variant="bare" className="mt-auto flex-col gap-2">
           {error && (
             <p className="text-destructive text-center text-sm" role="alert">
               {error}
             </p>
           )}
-          <Button
-            className="w-full"
+          <SignOutButton
             disabled={signOut.isPending}
-            variant="ghost"
+            pending={signOut.isPending}
             onClick={() =>
               signOut.mutate(undefined, {
                 onError: (requestError) => setError(requestError.message),
               })
             }
-            type="button"
-          >
-            {signOut.isPending ? "Signing out…" : "Sign out"}
-          </Button>
+          />
         </SheetFooter>
       </SheetPopup>
     </Sheet>

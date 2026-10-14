@@ -42,6 +42,11 @@ apps/web/
 │           │   └── otp-field.tsx
 │           └── _form/
 │               └── login-form.tsx
+├── shared/
+│   ├── _button/
+│   │   └── sign-out-button.tsx
+│   └── _sheet/
+│       └── user-sheet.tsx
 ├── hooks/
 │   └── api/
 │       ├── use-counter.ts
@@ -70,6 +75,7 @@ Responsibilities:
 
 - `app/` owns routable pages only; `(auth)` and `(protected)` group by access, enforced by `lib/auth/` guards.
 - `components/pages/<page>/` owns page-specific UI; underscore-prefixed `_form/`, `_fields/`, and `_button/` are non-routable implementation pieces, one component per file.
+- `components/shared/` owns cross-page UI (`_sheet/`, `_button/`) with the same one-component-per-file rule.
 - `api/` owns HTTP request functions and error mapping; `hooks/api/` owns React Query wrappers.
 - `lib/auth/` owns server session reads (`session.ts`, Next imports allowed) and the pure session mapper (`session-user.ts`, no Next imports so `bun test` can load it).
 - `providers/` owns shared client providers.

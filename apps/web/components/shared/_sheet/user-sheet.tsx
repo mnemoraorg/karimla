@@ -20,6 +20,8 @@ export function UserSheet(): React.ReactElement | null {
   const session = useSession()
   const signOut = useSignOut()
   const [error, setError] = useState("")
+  const [isRedirecting, setIsRedirecting] = useState(false)
+  const isSigningOut = signOut.isPending || isRedirecting
 
   if (!session.data) return null
 
@@ -47,10 +49,11 @@ export function UserSheet(): React.ReactElement | null {
             </p>
           )}
           <SignOutButton
-            disabled={signOut.isPending}
-            pending={signOut.isPending}
+            disabled={isSigningOut}
+            pending={isSigningOut}
             onClick={() =>
               signOut.mutate(undefined, {
+                onSuccess: () => setIsRedirecting(true),
                 onError: (requestError) => setError(requestError.message),
               })
             }

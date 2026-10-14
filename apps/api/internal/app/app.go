@@ -59,7 +59,7 @@ func New(cfg config.Config) (*Application, error) {
 	var dependencies v1.Dependencies
 	if store != nil {
 		sessionClient := betterauth.NewSessionClient(cfg.AuthBaseURL)
-		service := counter.NewService(store)
+		service := counter.NewService(store.Counters())
 		handlers := apihandler.New(service)
 		dependencies = v1.Dependencies{Handlers: handlers, Auth: sessionClient}
 	}

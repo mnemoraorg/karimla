@@ -3,21 +3,22 @@ import type { Metadata } from "next"
 import { baseKeywords } from "./keywords"
 export { baseKeywords } from "./keywords"
 
+const defaultName = "Karimla"
 const defaultDescription =
-  "We craft custom software and AI automation built to help businesses run smarter, cut inefficiencies, and scale."
-const defaultUrl = "https://mnemora.org"
+  "A playful word-counting game that tracks how many times each person says karimla."
+const defaultUrl = "https://karimla.mnemora.org"
 
 export interface MetadataConfig extends Omit<Metadata, "description" | "keywords"> {
-  name: string
+  name?: string
   url?: string
   ogImage?: string
   description?: string
   keywords?: string[]
 }
 
-export function createMetadata(config: MetadataConfig): Metadata {
+export function createMetadata(config: MetadataConfig = {}): Metadata {
   const {
-    name,
+    name = defaultName,
     url = defaultUrl,
     ogImage = `${url}/og.png`,
     description = defaultDescription,
@@ -34,11 +35,11 @@ export function createMetadata(config: MetadataConfig): Metadata {
     keywords,
     authors: [
       {
-        name: "Mnemora",
+        name: defaultName,
         url,
       },
     ],
-    creator: "Mnemora",
+    creator: defaultName,
     openGraph: {
       type: "website",
       locale: "en_US",

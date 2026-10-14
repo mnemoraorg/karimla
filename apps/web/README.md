@@ -1,10 +1,12 @@
-# vinext app
+# Karimla web
 
-This project was created with create-vinext-app.
+## Sign-in configuration
+
+Set `NEXT_PUBLIC_AUTH_URL` to the auth service URL for deployment. Local development defaults to `http://localhost:35081`; see `.env.example`.
 
 ## Scripts
 
-- `pnpm run dev` starts the vinext dev server.
-- `pnpm run build` builds the Cloudflare Worker output.
-- `pnpm run start` starts the built Worker locally with Wrangler.
-- `pnpm run deploy` deploys the Cloudflare Worker.
+- `bun run dev` starts the vinext dev server on port 35000.
+- `bun run build` builds the Cloudflare Worker output.
+- `bun run start` starts the built Worker locally with Wrangler.
+- `bun run deploy` deploys the Cloudflare Worker.

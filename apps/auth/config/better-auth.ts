@@ -1,34 +1,19 @@
-import { betterAuth } from "better-auth"
-import { emailOTP } from "better-auth/plugins"
-import { kyselyAdapter } from "@better-auth/kysely-adapter"
-import { Kysely } from "kysely"
+import { z } from "zod"
 
-import type { AuthDatabase } from "./db"
+import { loadConfig } from "../lib/load-config"
+import type { AuthConfig, Environment } from "./_types"
+import { environment } from "./env"
 
-export interface AuthOptions {
-  secret: string
-  baseUrl: string
-  database: Kysely<AuthDatabase>
-  trustedOrigins: string[]
-}
+const betterAuthSchema = z.object({
+  BETTER_AUTH_SECRET: z.string().trim().min(32),
+  BETTER_AUTH_URL: z.url(),
+})
 
-export function createAuth({ secret, baseUrl, database, trustedOrigins }: AuthOptions) {
-  return betterAuth({
-    baseURL: baseUrl,
-    secret,
-    trustedOrigins,
-    // A new email signs up on first code, an existing email signs in. See the login copy.
-    emailAndPassword: { enabled: false },
-    database: kyselyAdapter(database, { type: "postgres" }),
-    plugins: [
-      // shortcut: the code is logged instead of emailed until a mail provider exists
-      emailOTP({
-        sendVerificationOnSignUp: true,
-        disableSignUp: false,
-        async sendVerificationOTP({ email, otp }) {
-          console.log(`[auth] sign-in code for ${email}: ${otp}`)
-        },
-      }),
-    ],
-  })
+export function loadBetterAuthConfig(env: Environment = environment): AuthConfig {
+  const values = loadConfig(betterAuthSchema, env)
+
+  return {
+    secret: values.BETTER_AUTH_SECRET,
+    url: values.BETTER_AUTH_URL.replace(/\/$/, ""),
+  }
 }

@@ -8,11 +8,13 @@
     "dev": "bun run src/server.ts",
     "start": "bun run src/server.ts",
     "test": "vitest run",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "db:generate": "bun run db/migrate.ts --generate",
+    "db:migrate": "bun run db/migrate.ts"
   },
   "dependencies": {
-    "@better-auth/kysely-adapter": "^1.7.5",
     "better-auth": "^1.7.5",
+    "cloudflare": "^7.1.0",
     "hono": "4.13.7",
     "kysely": "^0.29.6",
     "pg": "^8.23.0",

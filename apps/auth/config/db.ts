@@ -1,14 +1,11 @@
-import pg from "pg"
-import { Kysely, PostgresDialect } from "kysely"
+import { z } from "zod"
 
-export interface AuthDatabase {
-  [key: string]: unknown
-}
+import { loadConfig } from "../lib/load-config"
+import type { DatabaseConfig, Environment } from "./_types"
+import { environment } from "./env"
 
-export function createDatabase(databaseUrl: string): Kysely<AuthDatabase> {
-  const pool = new pg.Pool({ connectionString: databaseUrl })
+const databaseSchema = z.object({ DATABASE_URL: z.url() })
 
-  return new Kysely<AuthDatabase>({
-    dialect: new PostgresDialect({ pool }),
-  })
+export function loadDatabaseConfig(env: Environment = environment): DatabaseConfig {
+  return { url: loadConfig(databaseSchema, env).DATABASE_URL }
 }

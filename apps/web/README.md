@@ -1,5 +1,9 @@
 # Karimla web
 
+## Sign-in configuration
+
+Set `NEXT_PUBLIC_AUTH_URL` to the auth service URL for deployment. Local development defaults to `http://localhost:35081`; see `.env.example`.
+
 ## Scripts
 
 - `bun run dev` starts the vinext dev server on port 35000.

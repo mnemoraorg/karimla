@@ -1,58 +1,44 @@
-import { Hono } from "hono"
-import { cors } from "hono/cors"
-import { sql } from "kysely"
+import { config } from "../config/_index"
+import { auth, database } from "./auth"
+import { createApp } from "./http"
 
-import { createAuth } from "../config/better-auth"
-import { createDatabase } from "../config/db"
-import { loadAuthConfig } from "../config/env"
-
-const config = loadAuthConfig(process.env)
-const database = createDatabase(config.databaseUrl)
-const auth = createAuth({
-  secret: config.secret,
-  baseUrl: config.baseUrl,
-  database,
-  trustedOrigins: config.allowedOrigins,
-})
-
-const app = new Hono()
-
-app.use(
-  "/api/auth/*",
-  cors({
-    origin: config.allowedOrigins,
-    credentials: true,
-    allowHeaders: ["Content-Type"],
-    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  }),
-)
-
-app.all("/api/auth/*", (c) => auth.handler(c.req.raw))
-
-app.get("/health", (c) => c.json({ status: "ok" }))
-
+const app = createApp((request) => auth.handler(request), config.cors)
 let shuttingDown = false
 
-async function shutdown(server: { stop: () => void }): Promise<void> {
-  if (shuttingDown) return
-  shuttingDown = true
-  server.stop()
-  await database.destroy()
-  process.exit(0)
+export async function startServer() {
+  try {
+    const tables = await database.query(
+      "select table_name from information_schema.tables where table_schema = 'auth' and table_name in ('user', 'session', 'account', 'verification')",
+    )
+    if (tables.rowCount !== 4) throw new Error("auth schema is not migrated")
+    await auth.$context
+  } catch {
+    throw new Error(
+      "PostgreSQL is unavailable or auth tables are missing; run the auth migrations first",
+    )
+  }
+
+  const server = Bun.serve({ port: config.app.port, fetch: app.fetch })
+
+  const shutdown = async () => {
+    if (shuttingDown) return
+    shuttingDown = true
+    server.stop()
+    await database.end()
+  }
+
+  process.once("SIGINT", shutdown)
+  process.once("SIGTERM", shutdown)
+  console.info(`[auth] listening on ${config.auth.url}`)
+
+  return server
 }
 
-try {
-  // BetterAuth logs schema problems but keeps serving, so fail fast here instead.
-  await sql`select 1`.execute(database)
-  await auth.$context
-} catch (error) {
-  console.error(`[auth] could not start: ${error instanceof Error ? error.message : String(error)}`)
-  process.exit(1)
+if (import.meta.main) {
+  startServer().catch((error: unknown) => {
+    console.error(
+      `[auth] could not start: ${error instanceof Error ? error.message : "unknown error"}`,
+    )
+    process.exitCode = 1
+  })
 }
-
-const server = Bun.serve({ port: config.port, fetch: app.fetch })
-
-console.log(`[auth] listening on ${config.baseUrl}`)
-
-process.on("SIGINT", () => void shutdown(server))
-process.on("SIGTERM", () => void shutdown(server))

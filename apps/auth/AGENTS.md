@@ -2,11 +2,22 @@
 
 ## Scope
 
-`apps/auth/` is the BetterAuth identity service. It owns users, sessions, and the email one-time-code sign-in. The Go API on port `35080` trusts this service for identity; it does not hold identity data itself.
+`apps/auth/` is the BetterAuth identity service. It owns users, sessions, and email magic-link sign-in. The Go API trusts its opaque user IDs and must not duplicate identity data.
 
-## Stack and commands
+## Architecture
 
-Bun 1.3.14, TypeScript, BetterAuth, Kysely, `pg`, Hono, PostgreSQL, Vitest.
+Follow the Mnemora auth boundaries without copying unrelated invitation, Redis, or platform features:
+
+- `config/` validates intent-specific environment settings; `lib/load-config.ts` shares schema loading.
+- `src/auth.ts` composes BetterAuth, Kysely/PostgreSQL, and email delivery.
+- `src/http.ts` composes Hono routes and CORS.
+- `src/server.ts` owns Bun lifecycle.
+- `src/mailing/` delivers email; `templates/` contains static templates.
+- `db/` owns BetterAuth's `auth` schema migration.
+
+Use BetterAuth's magic-link plugin. Do not add passwords or email OTP. Keep BetterAuth responses unwrapped.
+
+## Commands
 
 Run commands from the repository root:
 
@@ -15,20 +26,18 @@ bun install
 bun run --cwd apps/auth dev
 bun run --cwd apps/auth test
 bun run --cwd apps/auth check-types
+bun run --cwd apps/auth db:generate
+bun run --cwd apps/auth db:migrate
 ```
 
-The port is `35081`, recorded in `.docs/ports.md`. `.env.example` is the configuration contract. Keep the real `.env` out of commits; it is ignored.
+The service uses port `35081`, recorded in `.docs/ports.md`. `.env.example` documents configuration. Keep `.env`, secrets, generated outputs, and database state out of commits.
 
-## Sign-in
+## Email
 
-A single email both signs up and signs in through the BetterAuth `emailOTP` plugin. With no mail provider configured, the code is written to the server console.
+Magic links are delivered through Cloudflare Email using `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, and `KARIMLA_EMAIL_FROM`. Never log magic-link URLs, tokens, or credentials.
 
-## Migrations
+## Testing
 
-BetterAuth owns the identity tables. Generate the SQL against a reachable PostgreSQL, then apply it before starting the service:
-
-```sh
-bun x @better-auth/cli@latest generate --config apps/auth/config/better-auth.ts --output apps/auth/db/auth-schema.sql
-```
-
-Never run migrations against a shared database without checking `.docs/` first.
+- `test/unit/` contains configuration and pure logic tests without PostgreSQL.
+- `test/integration/` covers Hono HTTP routes and CORS without starting PostgreSQL.
+- Keep PostgreSQL and real email tests at explicit integration boundaries; do not require developer-local credentials in unit tests.

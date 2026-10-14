@@ -1,5 +1,9 @@
 # Web app instructions
 
+## Required context
+
+Before changing web structure, import conventions, or API/hook boundaries, read `.agents/web/AGENTS.md` first.
+
 ## Component vs route placement
 
 - Never create a page inside `components/`. Route pages live only in `app/` (e.g. `app/(auth)/login/page.tsx`).

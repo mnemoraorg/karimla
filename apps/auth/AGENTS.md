@@ -1,5 +1,9 @@
 # Karimla auth instructions
 
+## Required context
+
+Before changing identity ownership, authentication persistence, session handling, or auth architecture, read `.agents/auth/AGENTS.md` and the relevant reference under `.agents/auth/architecture/`.
+
 ## Scope
 
 `apps/auth/` is the BetterAuth identity service. It owns users, sessions, and email magic-link sign-in. The Go API trusts its opaque user IDs and must not duplicate identity data.

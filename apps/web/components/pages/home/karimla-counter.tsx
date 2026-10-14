@@ -14,7 +14,7 @@ export function KarimlaCounter(): React.ReactElement {
   const isPending = counter.isPending || increment.isPending || decrement.isPending
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 px-6">
+    <div className="flex flex-col items-center gap-6">
       <p className="text-muted-foreground text-sm">You have said karimla</p>
       <p className="text-6xl font-semibold tabular-nums">{counter.data ?? 0}</p>
       <div className="flex w-full max-w-xs gap-3">

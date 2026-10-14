@@ -34,6 +34,8 @@ apps/web/
 │       │   ├── _button/
 │       │   │   ├── decrement-button.tsx
 │       │   │   └── increment-button.tsx
+│       │   └── _leaderboard/
+│       │       └── leaderboard.tsx
 │       │   └── _menu/
 │       │       └── user-menu.tsx
 │       └── login/

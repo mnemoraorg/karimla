@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation"
+import { KarimlaCounter } from "@/components/pages/home/karimla-counter"
 
 export default function Page() {
-  redirect("/login")
+  return <KarimlaCounter />
 }

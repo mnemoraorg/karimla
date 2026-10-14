@@ -63,6 +63,7 @@ export function LoginForm(): React.ReactElement {
   function armCooldown(): void {
     const until = cooldownDeadlineFromNow()
     window.localStorage.setItem(RESEND_DEADLINE_KEY, String(until))
+    setNow(Date.now())
     setCooldownUntil(until)
   }
 

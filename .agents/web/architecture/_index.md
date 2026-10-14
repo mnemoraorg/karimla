@@ -21,4 +21,4 @@ lib/auth guards  api/ + hooks/api/
 BetterAuth get-session   BetterAuth OTP endpoints
 ```
 
-The web app reads sessions and redirects; BetterAuth decides identity. The planned Go API will take over counter and friends data.
+The web app reads sessions and redirects; BetterAuth decides identity. The Go API owns the counter; friends data is still planned.

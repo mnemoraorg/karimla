@@ -3,7 +3,7 @@
 ## Layers
 
 ```text
-components/ → hooks/api/ (React Query) → api/ (fetch) → auth service or planned API
+components/ → hooks/api/ (React Query) → api/ (fetch) → auth service or Go API
 ```
 
 - `api/auth/client.ts` owns the auth base URL, credentialed requests, and the 10s timeout. `authRequest` throws a typed `Error`; it never returns response envelopes.

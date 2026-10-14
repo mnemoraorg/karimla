@@ -22,19 +22,27 @@ apps/api/
 │   │   └── app.go
 │   ├── config/
 │   │   └── config.go
-│   ├── adapter/        (added with the first persisted feature)
+│   ├── adapter/
+│   │   ├── betterauth/
+│   │   └── postgres/
 │   ├── delivery/
 │   │   └── http/
 │   │       ├── route.go
 │   │       └── v1/
 │   │           └── router.go
 │   ├── handler/
+│   │   ├── api/
 │   │   └── health/
-│   ├── domain/         (added with the first feature)
-│   ├── middleware/     (added when cross-cutting behavior needs it)
+│   ├── domain/
+│   │   └── counter/
+│   ├── middleware/
+│   │   └── auth/
 │   └── shared/
+│       ├── principal.go
 │       └── response/
-├── ent/                (added with the first schema)
+├── ent/
+│   ├── schema/
+│   └── migrate/migrations/
 ├── test/
 │   ├── unit/             package-level tests mirroring internal/
 │   ├── integration/      database and external-service tests

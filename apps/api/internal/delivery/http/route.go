@@ -5,6 +5,10 @@ import (
 	httpv1 "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http/v1"
 )
 
-func Register(app *fiber.App) {
-	httpv1.Register(app.Group("/api"))
+func Register(app *fiber.App, dependencies ...httpv1.Dependencies) {
+	var dependency httpv1.Dependencies
+	if len(dependencies) > 0 {
+		dependency = dependencies[0]
+	}
+	httpv1.Register(app.Group("/api"), dependency)
 }

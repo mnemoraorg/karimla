@@ -6,7 +6,7 @@ Before changing API boundaries, routes, adapters, persistence, or auth behavior,
 
 ## Scope
 
-`apps/api/` is the Go/Fiber API. BetterAuth remains the identity and session owner, PostgreSQL remains the data store, Ent will own runtime persistence, and Atlas will own schema migrations once the first schema lands with the counter slice.
+`apps/api/` is the Go/Fiber API. BetterAuth remains the identity and session owner, PostgreSQL remains the data store, Ent owns runtime persistence, and Atlas owns schema migrations.
 
 ## Boundaries
 
@@ -18,15 +18,15 @@ delivery/http → handler → domain feature service → repository port → ada
 - `internal/config/` owns environment parsing and validation.
 - `internal/delivery/http/` owns Fiber route registration and versioning under `/api/v1`.
 - `internal/handler/` translates HTTP requests and responses. Handlers must not query databases or orchestrate repositories.
-- `internal/domain/<feature>/` will own business models, errors, use cases, and repository interfaces. Domain code must not import Fiber.
-- `internal/adapter/` will own Ent/PostgreSQL and BetterAuth implementations. Keep Ent types inside adapters and map them to domain models at the repository boundary.
+- `internal/domain/<feature>/` owns business models, errors, use cases, and repository interfaces. Domain code must not import Fiber.
+- `internal/adapter/` owns Ent/PostgreSQL and BetterAuth implementations. Keep Ent types inside adapters and map them to domain models at the repository boundary.
 - `internal/shared/response/` owns the response envelope (`types.go`, `success_response.go`, `error_response.go`, `utils.go`). Do not place feature DTOs there.
 
 Do not add handwritten runtime SQL, duplicate BetterAuth identity data, or run schema migrations during application startup. Do not add Redis, roles, or invitations without an explicit product decision.
 
 ## Persistence
 
-Ent owns runtime persistence; Atlas owns migrations. Schemas will live under `ent/schema/` with the first feature schema; generated Ent output is ignored and must never be hand-edited or committed. The counter slice adds `make generate` and the `atlas/*` targets.
+Ent owns runtime persistence; Atlas owns migrations. Schemas live under `ent/schema/`; generated Ent output is ignored and must never be hand-edited or committed. Regenerate with `make generate` before building or testing code that imports generated packages.
 
 ## Test placement and structure
 
@@ -43,8 +43,10 @@ The local API port is `35080`, recorded in `.docs/ports.md`. The auth service UR
 Run from `apps/api/`:
 
 ```sh
-make build
+make generate
+make atlas/validate
 make test
+make build
 make lint
 make tidy
 ```

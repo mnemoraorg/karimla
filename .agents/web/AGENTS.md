@@ -7,7 +7,7 @@ This document is the active architecture guidance for `apps/web/`. The scoped ru
 `apps/web/` owns routes, presentation, and client session UX. It does not own identity or business data:
 
 - BetterAuth owns identity and session semantics. The web app only reads the session through `get-session` and redirects; it never verifies codes or mints sessions itself.
-- The Go API (planned, port `35080`) will own counter and friends data. Until it exists, do not build new browser-storage persistence for data the API will own.
+- The Go API (port `35080`) owns the counter; it will own friends data next. Do not build browser-storage persistence for data the API owns.
 - No passwords, OTP codes, or session tokens are stored, logged, or decided by web code.
 
 ## Boundary and request flow

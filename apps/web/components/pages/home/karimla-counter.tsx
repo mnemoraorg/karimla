@@ -1,33 +1,30 @@
 "use client"
 
 import type * as React from "react"
-import { useEffect, useState } from "react"
 
 import { Button } from "@packages/ui-w/shared/button/button"
-
-// shortcut: per-browser count until authentication gives each user their own count
-const STORAGE_KEY = "karimla.count"
+import { useCounter, useIncrementCounter } from "@/hooks/api/use-counter"
 
 export function KarimlaCounter(): React.ReactElement {
-  const [count, setCount] = useState(0)
-
-  useEffect(() => {
-    setCount(Number(window.localStorage.getItem(STORAGE_KEY)) || 0)
-  }, [])
-
-  function handleClick(): void {
-    const next = count + 1
-    setCount(next)
-    window.localStorage.setItem(STORAGE_KEY, String(next))
-  }
+  const counter = useCounter()
+  const increment = useIncrementCounter()
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 px-6">
       <p className="text-muted-foreground text-sm">You have said karimla</p>
-      <p className="text-6xl font-semibold tabular-nums">{count}</p>
-      <Button size="lg" onClick={handleClick}>
-        karimla
+      <p className="text-6xl font-semibold tabular-nums">{counter.data ?? 0}</p>
+      <Button
+        size="lg"
+        disabled={counter.isPending || increment.isPending}
+        onClick={() => increment.mutate()}
+      >
+        {increment.isPending ? "Counting…" : "karimla"}
       </Button>
+      {(counter.error || increment.error) && (
+        <p className="text-destructive text-center text-sm" role="alert">
+          {(counter.error ?? increment.error)?.message}
+        </p>
+      )}
     </div>
   )
 }

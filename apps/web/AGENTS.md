@@ -6,7 +6,7 @@ Before changing web structure, import conventions, or API/hook boundaries, read 
 
 ## Scope
 
-`apps/web/` is the Karimla web app on port `35000`, recorded in `.docs/ports.md`. It owns routes, presentation, and client session UX. BetterAuth (port `35081`) owns identity and session semantics; the Go API (planned, port `35080`) will own counter and friends data.
+`apps/web/` is the Karimla web app on port `35000`, recorded in `.docs/ports.md`. It owns routes, presentation, and client session UX. BetterAuth (port `35081`) owns identity and session semantics; the Go API (port `35080`) owns the counter and will own friends data.
 
 ## Structure
 

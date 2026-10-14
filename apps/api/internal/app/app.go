@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"net"
@@ -11,13 +12,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/mnemoraorg/karimla/apps/api/internal/adapter/betterauth"
+	postgresadapter "github.com/mnemoraorg/karimla/apps/api/internal/adapter/postgres"
 	"github.com/mnemoraorg/karimla/apps/api/internal/config"
 	deliveryhttp "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http"
+	v1 "github.com/mnemoraorg/karimla/apps/api/internal/delivery/http/v1"
+	"github.com/mnemoraorg/karimla/apps/api/internal/domain/counter"
+	apihandler "github.com/mnemoraorg/karimla/apps/api/internal/handler/api"
 )
 
 type Application struct {
 	http    *fiber.App
 	address string
+	db      *sql.DB
 }
 
 func New(cfg config.Config) (*Application, error) {
@@ -33,8 +41,30 @@ func New(cfg config.Config) (*Application, error) {
 		}))
 	}
 
-	deliveryhttp.Register(server)
-	return &Application{http: server, address: fmt.Sprintf(":%d", cfg.Port)}, nil
+	var store *postgresadapter.Store
+	var db *sql.DB
+	if cfg.DatabaseURL != "" {
+		var err error
+		db, err = sql.Open("pgx", cfg.DatabaseURL)
+		if err != nil {
+			return nil, fmt.Errorf("open database: %w", err)
+		}
+		db.SetMaxOpenConns(10)
+		db.SetMaxIdleConns(5)
+		db.SetConnMaxLifetime(4 * time.Minute)
+		db.SetConnMaxIdleTime(time.Minute)
+		store = postgresadapter.New(db)
+	}
+
+	var dependencies v1.Dependencies
+	if store != nil {
+		sessionClient := betterauth.NewSessionClient(cfg.AuthBaseURL)
+		service := counter.NewService(store)
+		handlers := apihandler.New(service)
+		dependencies = v1.Dependencies{Handlers: handlers, Auth: sessionClient}
+	}
+	deliveryhttp.Register(server, dependencies)
+	return &Application{http: server, address: fmt.Sprintf(":%d", cfg.Port), db: db}, nil
 }
 
 func (a *Application) Run(ctx context.Context) error {
@@ -43,6 +73,11 @@ func (a *Application) Run(ctx context.Context) error {
 		return fmt.Errorf("listen on %s: %w", a.address, err)
 	}
 	defer listener.Close()
+	defer func() {
+		if a.db != nil {
+			_ = a.db.Close()
+		}
+	}()
 
 	errCh := make(chan error, 1)
 	go func() {

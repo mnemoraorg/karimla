@@ -73,10 +73,10 @@ Keep imports in this order:
 
 1. A file directive such as `"use client"`, when needed.
 2. External libraries and packages (`react`, `next/*`, `@tanstack/*`, and similar).
-3. Shared workspace packages (`@packages/ui-w/...`, `@packages/metadata`, and similar).
+3. Custom web hooks from `@/hooks/...`.
 4. Web API modules from `@/api/...`.
-5. Web hooks from `@/hooks/...`.
-6. Web providers, helpers, and state modules (`@/providers/...`, `@/lib/...`, and similar).
+5. Web providers, helpers, and state modules (`@/providers/...`, `@/lib/...`, and similar).
+6. Shared workspace components from `@packages/ui-w/...`.
 7. Local web components from `@/components/...`.
 
 Use one blank line between groups. Use the configured `@/` alias for cross-directory web imports. Keep same-directory relative imports only for small internal modules where an alias would add no clarity. Keep type-only imports in the group for the module they import from.

@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react"
 import type * as React from "react"
 
+import { useSendLoginOtp } from "@/hooks/api/auth/use-send-otp"
+import { useSignInWithOtp } from "@/hooks/api/auth/use-sign-in"
+
 import { Button } from "@packages/ui-w/shared/button/button"
 import { LoginField } from "@/components/pages/login/_fields/login-field"
 import { OtpField } from "@/components/pages/login/_fields/otp-field"
-import { useSendLoginOtp } from "@/hooks/api/auth/use-send-otp"
-import { useSignInWithOtp } from "@/hooks/api/auth/use-sign-in"
 
 type LoginStep = "email" | "code"
 

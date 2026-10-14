@@ -25,6 +25,13 @@ func (f *fakeRepository) Increment(_ context.Context, authUserID string) (counte
 	return counter.Counter{AuthUserID: authUserID, Count: f.rows[authUserID]}, nil
 }
 
+func (f *fakeRepository) Decrement(_ context.Context, authUserID string) (counter.Counter, error) {
+	if f.rows[authUserID] > 0 {
+		f.rows[authUserID] = f.rows[authUserID] - 1
+	}
+	return counter.Counter{AuthUserID: authUserID, Count: f.rows[authUserID]}, nil
+}
+
 func TestGetCountDefaultsMissingUsersToZero(t *testing.T) {
 	service := counterservice.NewService(&fakeRepository{rows: map[string]int{}})
 
@@ -54,5 +61,33 @@ func TestIncrementStartsNewCountersAtOne(t *testing.T) {
 	}
 	if fresh != 1 {
 		t.Fatalf("count = %d, want 1", fresh)
+	}
+}
+
+func TestDecrementFloorsMissingAndZeroCountersAtZero(t *testing.T) {
+	service := counterservice.NewService(&fakeRepository{rows: map[string]int{"user-1": 41}})
+
+	down, err := service.Decrement(context.Background(), "user-1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if down != 40 {
+		t.Fatalf("count = %d, want 40", down)
+	}
+
+	missing, err := service.Decrement(context.Background(), "user-2")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if missing != 0 {
+		t.Fatalf("count = %d, want 0", missing)
+	}
+
+	floor, err := service.Decrement(context.Background(), "user-2")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if floor != 0 {
+		t.Fatalf("count = %d, want 0", floor)
 	}
 }

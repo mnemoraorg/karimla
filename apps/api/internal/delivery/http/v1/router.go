@@ -22,4 +22,5 @@ func Register(router fiber.Router, dependencies Dependencies) {
 	counter := v1.Group("/counter", authmiddleware.Require(dependencies.Auth))
 	counter.Get("", dependencies.Handlers.GetCounter)
 	counter.Post("/increment", dependencies.Handlers.IncrementCounter)
+	counter.Post("/decrement", dependencies.Handlers.DecrementCounter)
 }

@@ -17,4 +17,5 @@ type Counter struct {
 type Repository interface {
 	Get(ctx context.Context, authUserID string) (Counter, error)
 	Increment(ctx context.Context, authUserID string) (Counter, error)
+	Decrement(ctx context.Context, authUserID string) (Counter, error)
 }

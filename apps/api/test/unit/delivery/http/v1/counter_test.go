@@ -32,6 +32,13 @@ func (f *fakeRepository) Increment(_ context.Context, authUserID string) (counte
 	return counter.Counter{AuthUserID: authUserID, Count: f.rows[authUserID]}, nil
 }
 
+func (f *fakeRepository) Decrement(_ context.Context, authUserID string) (counter.Counter, error) {
+	if f.rows[authUserID] > 0 {
+		f.rows[authUserID] = f.rows[authUserID] - 1
+	}
+	return counter.Counter{AuthUserID: authUserID, Count: f.rows[authUserID]}, nil
+}
+
 type stubValidator struct{}
 
 func (stubValidator) Validate(_ context.Context, cookie, _ string) (shared.Principal, bool, error) {
@@ -71,5 +78,30 @@ func TestCounterRoutesRequireAndServeSession(t *testing.T) {
 	}
 	if got := string(body); !strings.Contains(got, `"count":1`) {
 		t.Fatalf("body = %s, want count 1", got)
+	}
+
+	deniedDecrement, err := app.Test(httptest.NewRequest("POST", "/api/v1/counter/decrement", nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if deniedDecrement.StatusCode != fiber.StatusUnauthorized {
+		t.Fatalf("status = %d, want %d", deniedDecrement.StatusCode, fiber.StatusUnauthorized)
+	}
+
+	decrementRequest := httptest.NewRequest("POST", "/api/v1/counter/decrement", nil)
+	decrementRequest.Header.Set("Cookie", "better-auth.session_token=test")
+	decrement, err := app.Test(decrementRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	decrementBody, err := io.ReadAll(decrement.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if decrement.StatusCode != fiber.StatusOK {
+		t.Fatalf("status = %d, want %d (body %s)", decrement.StatusCode, fiber.StatusOK, decrementBody)
+	}
+	if got := string(decrementBody); !strings.Contains(got, `"count":0`) {
+		t.Fatalf("body = %s, want count 0", got)
 	}
 }

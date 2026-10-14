@@ -39,6 +39,21 @@ describe("getCounter", () => {
   })
 })
 
+describe("decrementCounter", () => {
+  it("posts to the decrement endpoint and returns the new count", async () => {
+    let request
+    globalThis.fetch = async (url, init) => {
+      request = { url: String(url), init }
+      return envelope({ count: 40 })
+    }
+
+    const { decrementCounter } = await import("../../../api/counter.ts")
+    await expect(decrementCounter()).resolves.toBe(40)
+    expect(request.url).toBe("https://api.example/api/v1/counter/decrement")
+    expect(request.init.method).toBe("POST")
+  })
+})
+
 describe("incrementCounter", () => {
   it("posts to the increment endpoint and returns the new count", async () => {
     let request

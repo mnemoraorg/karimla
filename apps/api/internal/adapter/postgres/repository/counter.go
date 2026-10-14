@@ -27,6 +27,20 @@ func (r *Counter) Get(ctx context.Context, authUserID string) (counter.Counter, 
 	return counter.Counter{AuthUserID: row.ID, Count: row.Count}, nil
 }
 
+func (r *Counter) Decrement(ctx context.Context, authUserID string) (counter.Counter, error) {
+	updated, err := r.client.Counter.Update().
+		Where(counterent.IDEQ(authUserID), counterent.CountGT(0)).
+		AddCount(-1).
+		Save(ctx)
+	if err != nil {
+		return counter.Counter{}, err
+	}
+	if updated > 0 {
+		return r.Get(ctx, authUserID)
+	}
+	return counter.Counter{AuthUserID: authUserID}, nil
+}
+
 func (r *Counter) Increment(ctx context.Context, authUserID string) (counter.Counter, error) {
 	updated, err := r.client.Counter.Update().
 		Where(counterent.IDEQ(authUserID)).

@@ -1,15 +1,6 @@
-"use client"
+import { LoginForm } from "@/components/pages/login/_form/login-form"
 
-import type * as React from "react"
-
-import { Button } from "@packages/ui-w/shared/button/button"
-import { Input } from "@packages/ui-w/shared/input/input"
-
-export function LoginPage(): React.ReactElement {
-  function handleEmailSubmit(event: React.SyntheticEvent<HTMLFormElement>): void {
-    event.preventDefault()
-  }
-
+export default function Page() {
   return (
     <div className="flex min-h-svh flex-col">
       <header className="flex items-center justify-center py-6">
@@ -24,24 +15,7 @@ export function LoginPage(): React.ReactElement {
             </p>
           </div>
 
-          <form className="flex w-full flex-col gap-4" onSubmit={handleEmailSubmit}>
-            <Input
-              aria-label="Email"
-              autoComplete="email"
-              className="w-full"
-              id="email"
-              name="email"
-              nativeInput
-              placeholder="Enter your email"
-              required
-              size="lg"
-              spellCheck={false}
-              type="email"
-            />
-            <Button className="w-full" type="submit">
-              Continue with Email
-            </Button>
-          </form>
+          <LoginForm />
 
           <p className="text-muted-foreground text-sm">
             Don&apos;t have an account?{" "}

@@ -24,14 +24,18 @@ apps/web/
 │   └── auth/
 │       ├── client.ts
 │       ├── send-otp.ts
-│       └── sign-in.ts
+│       ├── session.ts
+│       ├── sign-in.ts
+│       └── sign-out.ts
 ├── components/
 │   └── pages/
 │       ├── home/
 │       │   ├── karimla-counter.tsx
-│       │   └── _button/
-│       │       ├── decrement-button.tsx
-│       │       └── increment-button.tsx
+│       │   ├── _button/
+│       │   │   ├── decrement-button.tsx
+│       │   │   └── increment-button.tsx
+│       │   └── _menu/
+│       │       └── user-menu.tsx
 │       └── login/
 │           ├── _fields/
 │           │   ├── login-field.tsx
@@ -43,7 +47,9 @@ apps/web/
 │       ├── use-counter.ts
 │       └── auth/
 │           ├── use-send-otp.ts
-│           └── use-sign-in.ts
+│           ├── use-session.ts
+│           ├── use-sign-in.ts
+│           └── use-sign-out.ts
 ├── lib/
 │   └── auth/
 │       ├── session.ts

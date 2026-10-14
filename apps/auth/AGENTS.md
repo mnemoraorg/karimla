@@ -34,7 +34,7 @@ The service uses port `35081`, recorded in `.docs/ports.md`. `.env.example` docu
 
 ## Email
 
-Magic links are delivered through Cloudflare Email using `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, and `KARIMLA_EMAIL_FROM`. Never log magic-link URLs, tokens, or credentials.
+Magic links are delivered through Cloudflare Email using `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, and `NO_REPLY_EMAIL`. `INVITATION_EMAIL` is reserved for invitations and is not used by this app. Never log magic-link URLs, tokens, or credentials.
 
 ## Testing
 

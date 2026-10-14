@@ -7,7 +7,7 @@ import { environment } from "./env"
 const emailSchema = z.object({
   CLOUDFLARE_ACCOUNT_ID: z.string().trim().min(1),
   CLOUDFLARE_API_TOKEN: z.string().trim().min(1),
-  KARIMLA_EMAIL_FROM: z.email(),
+  NO_REPLY_EMAIL: z.email(),
 })
 
 export function loadEmailConfig(env: Environment = environment): EmailConfig {
@@ -16,6 +16,6 @@ export function loadEmailConfig(env: Environment = environment): EmailConfig {
   return {
     accountId: values.CLOUDFLARE_ACCOUNT_ID,
     apiToken: values.CLOUDFLARE_API_TOKEN,
-    from: values.KARIMLA_EMAIL_FROM,
+    from: values.NO_REPLY_EMAIL,
   }
 }

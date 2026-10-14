@@ -37,7 +37,7 @@ export class CloudflareEmailSender {
   ) {}
 
   async sendMagicLink({ email, url }: MagicLinkMessage): Promise<void> {
-    const html = (await readFile(magicLinkTemplate, "utf8")).replace(
+    const html = (await readFile(magicLinkTemplate, "utf8")).replaceAll(
       "{{magic_link}}",
       escapeHtml(url),
     )

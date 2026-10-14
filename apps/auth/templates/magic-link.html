@@ -1,11 +1,99 @@
 <!doctype html>
 <html lang="en">
-  <body style="font-family: sans-serif; color: #20211f; line-height: 1.5">
-    <h1>Your Karimla sign-in link</h1>
-    <p>
-      Click below to sign in to Karimla. This link expires in 10 minutes and can only be used once.
-    </p>
-    <p><a href="{{magic_link}}">Sign in to Karimla</a></p>
-    <p>If you didn’t request this link, you can ignore this email.</p>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Your sign-in link for Karimla</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      background: #0f0f0f;
+      color: #f6f6f6;
+      font-family: &quot;Bricolage Grotesque&quot;, Arial, sans-serif;
+      line-height: 1.5;
+    "
+  >
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" bgcolor="#0f0f0f">
+      <tr>
+        <td align="center" style="padding: 40px 16px">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            style="max-width: 440px"
+          >
+            <tr>
+              <td
+                align="center"
+                style="padding: 0 0 20px; color: #f6f6f6; font-size: 14px; font-weight: 600"
+              >
+                Karimla <span style="color: #a3a3a3; font-weight: 400">by Mnemora</span>
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 32px;
+                  border: 1px solid #3a3a3a;
+                  border-radius: 20px;
+                  background: #141414;
+                "
+              >
+                <h1
+                  style="
+                    margin: 0 0 12px;
+                    color: #f6f6f6;
+                    font-size: 24px;
+                    font-weight: 600;
+                    letter-spacing: -0.5px;
+                    line-height: 1.2;
+                  "
+                >
+                  Your sign-in link
+                </h1>
+                <p style="margin: 0 0 24px; color: #c4c4c4; font-size: 15px">
+                  Use this link to get back to your Karimla count. It expires in 10 minutes and can
+                  only be used once.
+                </p>
+                <table role="presentation" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="center" style="border-radius: 12px; background: #f6f6f6">
+                      <a
+                        href="{{magic_link}}"
+                        style="
+                          display: inline-block;
+                          padding: 13px 20px;
+                          border-radius: 12px;
+                          color: #141414;
+                          font-size: 15px;
+                          font-weight: 600;
+                          text-decoration: none;
+                        "
+                      >
+                        Sign in to Karimla
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin: 24px 0 8px; color: #a3a3a3; font-size: 13px">
+                  If the button doesn’t work, copy and paste this link:
+                </p>
+                <p style="margin: 0; font-size: 13px; line-height: 1.5; word-break: break-all">
+                  <a href="{{magic_link}}" style="color: #f6f6f6">{{magic_link}}</a>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding: 20px 12px 0; color: #a3a3a3; font-size: 13px">
+                If you didn’t request this link, you can safely ignore this email.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

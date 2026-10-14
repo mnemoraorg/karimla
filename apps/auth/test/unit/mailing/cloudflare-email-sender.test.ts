@@ -28,9 +28,10 @@ describe("CloudflareEmailSender", () => {
       expect.objectContaining({
         to: "user@example.com",
         subject: "Your sign-in link for Karimla",
-        html: expect.stringContaining("token=secret&amp;callbackURL="),
       }),
     )
+    const email = send.mock.calls[0]![0] as { html: string }
+    expect(email.html.match(/token=secret&amp;callbackURL=/g)).toHaveLength(3)
   })
 
   it("reports rejected delivery without exposing provider details", async () => {

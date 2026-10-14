@@ -10,7 +10,7 @@ const validEnv = {
   BETTER_AUTH_URL: "http://localhost:35081/",
   CLOUDFLARE_ACCOUNT_ID: "account-id",
   CLOUDFLARE_API_TOKEN: "api-token",
-  KARIMLA_EMAIL_FROM: "login@example.com",
+  NO_REPLY_EMAIL: "login@example.com",
 }
 
 describe("auth config", () => {
@@ -31,7 +31,13 @@ describe("auth config", () => {
 
   it("requires a strong BetterAuth secret and valid sender address", () => {
     expect(() => loadBetterAuthConfig({ ...validEnv, BETTER_AUTH_SECRET: "short" })).toThrow()
-    expect(() => loadEmailConfig({ ...validEnv, KARIMLA_EMAIL_FROM: "invalid" })).toThrow()
+    expect(() => loadEmailConfig({ ...validEnv, NO_REPLY_EMAIL: "invalid" })).toThrow()
+  })
+
+  it("uses the no-reply sender and leaves invitations unused", () => {
+    expect(loadEmailConfig({ ...validEnv, INVITATION_EMAIL: "invite@example.com" }).from).toBe(
+      validEnv.NO_REPLY_EMAIL,
+    )
   })
 
   it("requires Cloudflare email credentials", () => {

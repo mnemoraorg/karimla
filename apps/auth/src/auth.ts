@@ -12,7 +12,7 @@ const authDatabase = new Kysely({ dialect: new PostgresDialect({ pool: database 
 const emailSender = new CloudflareEmailSender(config.email)
 
 export const auth = betterAuth({
-  appName: "Karimla",
+  appName: "Yappi",
   baseURL: config.auth.url,
   basePath: "/api/v1/auth",
   secret: config.auth.secret,
@@ -63,6 +63,7 @@ export const auth = betterAuth({
       disableSignUp: false,
       expiresIn: 600,
       otpLength: 6,
+      rateLimit: { max: 1, window: 60 },
       sendVerificationOnSignUp: true,
       storeOTP: "hashed",
       sendVerificationOTP: (data) => emailSender.sendVerificationOtp(data),

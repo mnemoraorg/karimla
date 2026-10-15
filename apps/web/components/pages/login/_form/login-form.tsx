@@ -3,20 +3,25 @@
 import { useEffect, useState } from "react"
 import type * as React from "react"
 
-import { Button } from "@packages/ui-w/shared/button/button"
-import { LoginField } from "@/components/pages/login/_fields/login-field"
-import { OtpField } from "@/components/pages/login/_fields/otp-field"
 import { useSendLoginOtp } from "@/hooks/api/auth/use-send-otp"
 import { useSignInWithOtp } from "@/hooks/api/auth/use-sign-in"
+import {
+  cooldownDeadlineFromNow,
+  cooldownRemainingMs,
+  PENDING_LOGIN_EMAIL_KEY,
+  RESEND_DEADLINE_KEY,
+} from "@/lib/login"
+
+import { Button } from "@packages/ui-w/shared/button/button"
+import { LoginField } from "@/components/pages/login/_field/login-field"
+import { OtpField } from "@/components/pages/login/_field/otp-field"
 
 type LoginStep = "email" | "code"
-
-const PENDING_EMAIL_KEY = "karimla.pending-email"
 
 function readPendingEmail(): string | null {
   if (new URLSearchParams(window.location.search).get("step") !== "verify") return null
 
-  const email = window.sessionStorage.getItem(PENDING_EMAIL_KEY)
+  const email = window.sessionStorage.getItem(PENDING_LOGIN_EMAIL_KEY)
   return email ? email : null
 }
 
@@ -35,14 +40,39 @@ export function LoginForm(): React.ReactElement {
   const [email, setEmail] = useState("")
   const [otp, setOtp] = useState("")
   const [error, setError] = useState("")
+  const [isRedirecting, setIsRedirecting] = useState(false)
+  const [cooldownUntil, setCooldownUntil] = useState(0)
+  const [now, setNow] = useState(() => Date.now())
+  const cooldownMs = cooldownRemainingMs(cooldownUntil, now)
 
   useEffect(() => {
     const pendingEmail = readPendingEmail()
     if (pendingEmail) {
       setEmail(pendingEmail)
       setStep("code")
+      setCooldownUntil(Number(window.localStorage.getItem(RESEND_DEADLINE_KEY)) || 0)
     }
   }, [])
+
+  useEffect(() => {
+    if (cooldownUntil <= now) return
+
+    const timeout = window.setTimeout(() => setNow(Date.now()), 1000)
+    return () => window.clearTimeout(timeout)
+  }, [cooldownUntil, now])
+
+  function armCooldown(): void {
+    const until = cooldownDeadlineFromNow()
+    window.localStorage.setItem(RESEND_DEADLINE_KEY, String(until))
+    setNow(Date.now())
+    setCooldownUntil(until)
+  }
+
+  function clearPending(): void {
+    window.sessionStorage.removeItem(PENDING_LOGIN_EMAIL_KEY)
+    window.localStorage.removeItem(RESEND_DEADLINE_KEY)
+    setCooldownUntil(0)
+  }
 
   function handleEmailSubmit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault()
@@ -58,8 +88,9 @@ export function LoginForm(): React.ReactElement {
     sendOtp.mutate(address, {
       onSuccess: () => {
         const normalizedEmail = address.trim().toLowerCase()
-        window.sessionStorage.setItem(PENDING_EMAIL_KEY, normalizedEmail)
+        window.sessionStorage.setItem(PENDING_LOGIN_EMAIL_KEY, normalizedEmail)
         showVerifyStep()
+        armCooldown()
         setEmail(normalizedEmail)
         setOtp("")
         setStep("code")
@@ -76,7 +107,8 @@ export function LoginForm(): React.ReactElement {
       { email, otp },
       {
         onSuccess: () => {
-          window.sessionStorage.removeItem(PENDING_EMAIL_KEY)
+          clearPending()
+          setIsRedirecting(true)
           window.location.replace("/")
         },
         onError: (requestError) => setError(requestError.message),
@@ -84,10 +116,13 @@ export function LoginForm(): React.ReactElement {
     )
   }
 
+  const isVerifying = signIn.isPending || isRedirecting
+
   function handleResendCode(): void {
-    if (sendOtp.isPending || signIn.isPending) return
+    if (cooldownMs > 0 || sendOtp.isPending || isVerifying) return
     setError("")
     sendOtp.mutate(email, {
+      onSuccess: armCooldown,
       onError: (requestError) => setError(requestError.message),
     })
   }
@@ -95,7 +130,7 @@ export function LoginForm(): React.ReactElement {
   function useDifferentEmail(): void {
     sendOtp.reset()
     signIn.reset()
-    window.sessionStorage.removeItem(PENDING_EMAIL_KEY)
+    clearPending()
     showEmailStep()
     setError("")
     setOtp("")
@@ -109,9 +144,9 @@ export function LoginForm(): React.ReactElement {
           We sent a 6-digit code to <span className="text-foreground">{email}</span>.
         </p>
         <form className="flex w-full flex-col gap-4" onSubmit={handleOtpSubmit}>
-          <OtpField disabled={signIn.isPending} onChange={setOtp} value={otp} />
-          <Button className="w-full" disabled={otp.length !== 6 || signIn.isPending} type="submit">
-            {signIn.isPending ? "Verifying…" : "Verify and continue"}
+          <OtpField disabled={isVerifying} onChange={setOtp} value={otp} />
+          <Button className="w-full" disabled={otp.length !== 6 || isVerifying} type="submit">
+            {isVerifying ? "Verifying…" : "Verify and continue"}
           </Button>
         </form>
         {error && (
@@ -120,21 +155,25 @@ export function LoginForm(): React.ReactElement {
           </p>
         )}
         <div className="flex items-center justify-center gap-4 text-sm">
-          <button
-            className="text-muted-foreground hover:text-foreground"
-            disabled={sendOtp.isPending || signIn.isPending}
-            onClick={handleResendCode}
-            type="button"
-          >
-            {sendOtp.isPending ? "Sending…" : "Resend code"}
-          </button>
-          <button
-            className="text-muted-foreground hover:text-foreground"
-            onClick={useDifferentEmail}
-            type="button"
-          >
+          {cooldownMs > 0 ? (
+            <span className="text-muted-foreground" role="status">
+              Resend in{" "}
+              <span className="text-foreground tabular-nums">{Math.ceil(cooldownMs / 1000)}s</span>
+            </span>
+          ) : (
+            <Button
+              disabled={sendOtp.isPending || isVerifying}
+              size="sm"
+              variant="link"
+              onClick={handleResendCode}
+              type="button"
+            >
+              {sendOtp.isPending ? "Sending…" : "Resend code"}
+            </Button>
+          )}
+          <Button size="sm" variant="link" onClick={useDifferentEmail} type="button">
             Use a different email
-          </button>
+          </Button>
         </div>
       </div>
     )

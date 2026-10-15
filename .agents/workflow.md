@@ -37,3 +37,17 @@ When the user explicitly requests GitHub delivery, use the retained-work loop:
 9. **Sync** — fetch/prune and fast-forward local `development`; verify the final state.
 
 If a required remote issue, review, CI check, or merge step is blocked, report it instead of treating the work as complete.
+
+## Commit and merge messages
+
+Use Conventional Commits (`type(scope): subject`) everywhere a message is recorded, including GitHub-generated ones:
+
+- Local commits follow the convention.
+- PR titles follow the convention too: squash-merge copies the PR title verbatim as the commit message.
+- When merging, pass an explicit conventional subject instead of accepting GitHub defaults. Never land a bare `Merge pull request #N from ...` message:
+
+```sh
+gh pr merge <number> --squash -t "feat(auth): sign in with a 6-digit email OTP code"
+```
+
+- Never rewrite published history to repair a message; fix the process going forward.

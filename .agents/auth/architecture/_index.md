@@ -26,4 +26,4 @@ Kysely/pg
 PostgreSQL auth schema
 ```
 
-BetterAuth owns identity behavior and identity persistence. Karimla-owned code provides configuration, transport composition, and only the adapters BetterAuth does not provide (Cloudflare Email delivery). There is no Redis, no invitation service, and no internal service-token route.
+BetterAuth owns identity behavior and identity persistence. Yappi-owned code provides configuration, transport composition, and only the adapters BetterAuth does not provide (Cloudflare Email delivery). There is no Redis, no invitation service, and no internal service-token route.

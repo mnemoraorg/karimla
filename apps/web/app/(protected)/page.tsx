@@ -1,8 +1,5 @@
-import { requireKarimlaSession } from "@/lib/auth/session"
-import { KarimlaCounter } from "@/components/pages/home/karimla-counter"
+import { GroupsView } from "@/components/pages/home/_groups/groups-view"
 
-export default async function Page() {
-  await requireKarimlaSession()
-
-  return <KarimlaCounter />
+export default function Page() {
+  return <GroupsView />
 }

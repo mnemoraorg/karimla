@@ -1,1 +1,1 @@
-export const baseKeywords = ["Karimla", "word counting", "word game", "Mnemora"]
+export const baseKeywords = ["Yappi", "word counting", "word game", "Mnemora"]

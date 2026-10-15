@@ -1,6 +1,6 @@
 # Identity and boundaries
 
-BetterAuth is Karimla's canonical identity owner. It owns users, accounts, sessions, verification records, and opaque identity IDs. Sign-in is email-only through the `emailOTP` plugin: a 6-digit code both signs up a new email and signs in an existing one. Passwords and magic links are out of scope.
+BetterAuth is Yappi's canonical identity owner. It owns users, accounts, sessions, verification records, and opaque identity IDs. Sign-in is email-only through the `emailOTP` plugin: a 6-digit code both signs up a new email and signs in an existing one. Passwords and magic links are out of scope.
 
 The Go API owns counter and friends data only. It consumes the BetterAuth user ID as an opaque string and must not duplicate identity tables or credentials. The API must not read BetterAuth's database directly.
 
@@ -27,4 +27,4 @@ Hono HTTP/CORS boundary → BetterAuth email-OTP → Kysely/pg → PostgreSQL au
 - Tests must not require developer-local credentials unless they are explicit integration tests.
 - Email sending must never log OTP codes or credentials.
 
-Do not add MVC, application/domain/port layers, or interfaces for symmetry. Add a custom boundary only when Karimla owns a real behavior that cannot remain in BetterAuth or a thin adapter.
+Do not add MVC, application/domain/port layers, or interfaces for symmetry. Add a custom boundary only when Yappi owns a real behavior that cannot remain in BetterAuth or a thin adapter.

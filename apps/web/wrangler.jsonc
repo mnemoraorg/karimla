@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "karimla-web",
+  "name": "yappi-web",
   "compatibility_date": "2026-09-17",
   "compatibility_flags": ["nodejs_compat"],
   "main": "vinext/server/fetch-handler",
@@ -21,7 +21,7 @@
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "karimla-web",
+      "service": "yappi-web",
     },
   ],
 }

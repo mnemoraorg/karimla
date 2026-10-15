@@ -9,6 +9,7 @@ import { useDecrementMember, useGroup, useIncrementMember } from "@/hooks/api/us
 import { useSession } from "@/hooks/api/auth/use-session"
 
 import { Button } from "@packages/ui-w/shared/button/button"
+import { SpinnerFlicker01 } from "@packages/ui-w/shared/spinner-variant/spinner-flicker-01"
 import { GroupMemberCountCard } from "@/components/pages/groups/id/_card/group-member-count-card"
 import { PageHeader } from "@/components/shared/_header/page-header"
 
@@ -23,7 +24,11 @@ export default function Page(): React.ReactElement {
   const mutationError = increment.error ?? decrement.error
 
   if (group.isPending) {
-    return <p className="text-muted-foreground text-center text-sm">Loading this group…</p>
+    return (
+      <div className="flex w-full flex-1 items-center justify-center">
+        <SpinnerFlicker01 className="size-6" />
+      </div>
+    )
   }
 
   if (group.error || !group.data) {

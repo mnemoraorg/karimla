@@ -5,6 +5,7 @@ import type * as React from "react"
 import { useGroups } from "@/hooks/api/use-groups"
 
 import { GroupCard } from "@/components/pages/home/_card/group-card"
+import { SpinnerFlicker01 } from "@packages/ui-w/shared/spinner-variant/spinner-flicker-01"
 import { CreateAGroupDialog } from "@/components/pages/home/_dialog/create-a-group-dialog"
 import { JoinAGroupDialog } from "@/components/pages/home/_dialog/join-a-group-dialog"
 import { PageHeader } from "@/components/shared/_header/page-header"
@@ -13,7 +14,11 @@ export function GroupsView(): React.ReactElement {
   const groups = useGroups()
 
   if (groups.isPending) {
-    return <p className="text-muted-foreground text-center text-sm">Loading your groups…</p>
+    return (
+      <div className="flex w-full flex-1 items-center justify-center">
+        <SpinnerFlicker01 className="size-6" />
+      </div>
+    )
   }
 
   if (groups.error || !groups.data) {

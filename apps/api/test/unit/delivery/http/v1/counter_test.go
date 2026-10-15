@@ -28,11 +28,13 @@ func (f *fakeRepository) Get(_ context.Context, authUserID string) (counter.Coun
 }
 
 func (f *fakeRepository) Increment(_ context.Context, authUserID string) (counter.Counter, error) {
+	authUserID = strings.Clone(authUserID)
 	f.rows[authUserID] = f.rows[authUserID] + 1
 	return counter.Counter{AuthUserID: authUserID, Count: f.rows[authUserID]}, nil
 }
 
 func (f *fakeRepository) Decrement(_ context.Context, authUserID string) (counter.Counter, error) {
+	authUserID = strings.Clone(authUserID)
 	if f.rows[authUserID] > 0 {
 		f.rows[authUserID] = f.rows[authUserID] - 1
 	}
@@ -51,7 +53,7 @@ func (stubValidator) Validate(_ context.Context, cookie, _ string) (shared.Princ
 func TestCounterRoutesRequireAndServeSession(t *testing.T) {
 	app := fiber.New()
 	httpv1.Register(app.Group("/api"), httpv1.Dependencies{
-		Handlers: counterhandler.New(counterservice.NewService(&fakeRepository{rows: map[string]int{}})),
+		Counter: counterhandler.New(counterservice.NewService(&fakeRepository{rows: map[string]int{}})),
 		Auth:     stubValidator{},
 	})
 

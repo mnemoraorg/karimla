@@ -8,6 +8,7 @@ import (
 	entclient "github.com/mnemoraorg/yappi/apps/api/ent"
 	"github.com/mnemoraorg/yappi/apps/api/internal/adapter/postgres/repository"
 	"github.com/mnemoraorg/yappi/apps/api/internal/domain/counter"
+	"github.com/mnemoraorg/yappi/apps/api/internal/domain/group"
 )
 
 type Store struct {
@@ -20,4 +21,12 @@ func New(db *sql.DB) *Store {
 
 func (s *Store) Counters() counter.Repository {
 	return repository.NewCounter(s.ent)
+}
+
+func (s *Store) Groups() group.Repository {
+	return repository.NewGroup(s.ent)
+}
+
+func (s *Store) GroupCounts() group.CountRepository {
+	return repository.NewCount(s.ent)
 }

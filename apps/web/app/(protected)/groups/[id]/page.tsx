@@ -12,7 +12,7 @@ import { Button } from "@packages/ui-w/shared/button/button"
 import { SpinnerFlicker01 } from "@packages/ui-w/shared/spinner-variant/spinner-flicker-01"
 
 import { GroupMemberCountCard } from "@/components/pages/groups/id/_card/group-member-count-card"
-import { GroupInviteActions } from "@/components/pages/groups/id/_invite/group-invite-actions"
+import { GroupInviteFooter } from "@/components/pages/groups/id/_footer/group-invite-footer"
 import { PageHeader } from "@/components/shared/_header/page-header"
 
 export default function Page(): React.ReactElement {
@@ -106,7 +106,7 @@ export default function Page(): React.ReactElement {
           {mutationError.message}
         </p>
       )}
-      <GroupInviteActions group={groupData.group} />
+      <GroupInviteFooter group={groupData.group} />
     </div>
   )
 }

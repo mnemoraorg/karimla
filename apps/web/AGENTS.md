@@ -27,7 +27,7 @@ bunx tsc --noEmit -p apps/web/tsconfig.json
 bun run --cwd apps/web build
 ```
 
-`.env.example` documents configuration (`NEXT_PUBLIC_AUTH_URL`). Keep `.env`, secrets, build output, and local state out of commits.
+`.env.example` documents the required public configuration, validated by `lib/env.ts`. Keep `.env`, secrets, build output, and local state out of commits.
 
 ## Testing
 

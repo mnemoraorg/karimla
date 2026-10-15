@@ -1,8 +1,8 @@
 # Yappi web
 
-## Sign-in configuration
+## Configuration
 
-Set `NEXT_PUBLIC_AUTH_URL` to the auth service URL for deployment. Local development defaults to `http://localhost:35081`; see `.env.example`.
+Set all four public variables from `.env.example`. `lib/env.ts` validates them at startup; the auth and API URLs must point to their respective `/api/v1` endpoints.
 
 ## Scripts
 

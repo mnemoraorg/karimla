@@ -1,8 +1,9 @@
 import { afterEach, describe, expect, it } from "bun:test"
 
-const originalApiUrl = process.env.NEXT_PUBLIC_AUTH_URL
+import { setTestEnv } from "../env-test-setup.mjs"
+
+const restoreEnv = setTestEnv()
 const originalFetch = globalThis.fetch
-process.env.NEXT_PUBLIC_AUTH_URL = "https://auth.example/"
 
 const { getSession } = await import("../../../api/auth/session.ts")
 const { signOut } = await import("../../../api/auth/sign-out.ts")
@@ -10,8 +11,7 @@ const { updateUserName } = await import("../../../api/auth/update-user.ts")
 
 afterEach(() => {
   globalThis.fetch = originalFetch
-  if (originalApiUrl === undefined) delete process.env.NEXT_PUBLIC_AUTH_URL
-  else process.env.NEXT_PUBLIC_AUTH_URL = originalApiUrl
+  restoreEnv()
 })
 
 describe("getSession", () => {

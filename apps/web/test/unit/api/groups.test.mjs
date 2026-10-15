@@ -1,8 +1,9 @@
 import { afterEach, describe, expect, it } from "bun:test"
 
-const originalApiUrl = process.env.NEXT_PUBLIC_API_URL
+import { setTestEnv } from "../env-test-setup.mjs"
+
+const restoreEnv = setTestEnv()
 const originalFetch = globalThis.fetch
-process.env.NEXT_PUBLIC_API_URL = "https://api.example/"
 
 const {
   listGroups,
@@ -16,8 +17,7 @@ const {
 
 afterEach(() => {
   globalThis.fetch = originalFetch
-  if (originalApiUrl === undefined) delete process.env.NEXT_PUBLIC_API_URL
-  else process.env.NEXT_PUBLIC_API_URL = originalApiUrl
+  restoreEnv()
 })
 
 function envelope(data, status = 200) {

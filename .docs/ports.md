@@ -5,10 +5,10 @@ These are the ports reserved for local development. They are not expected to be 
 | Service         |    Port | Local address            | Configuration            |
 | --------------- | ------: | ------------------------ | ------------------------ |
 | Web application | `35000` | <http://localhost:35000> | `apps/web/package.json`  |
-| API             | `35080` | <http://localhost:35080> | reserved for `apps/api`  |
-| Auth            | `35081` | <http://localhost:35081> | reserved for `apps/auth` |
+| API             | `35080` | <http://localhost:35080> | `apps/api/Makefile`      |
+| Auth            | `35081` | <http://localhost:35081> | `apps/auth/package.json` |
 
-The web application is the only service with a configured port today. The API and auth ports are reserved so those applications do not collide with the web app when they are added.
+Each service owns its port; check before starting a service so a duplicate listener does not hide a stale one.
 
 To check whether a port is occupied on macOS or Linux:
 

@@ -47,7 +47,7 @@ export class CloudflareEmailSender {
     const context = {
       email: maskEmail(email),
       from: maskEmail(this.config.from),
-      subject: "Your Karimla verification code",
+      subject: "Your Yappi verification code",
     }
 
     logger.info("auth.email.send.started", context)
@@ -55,10 +55,10 @@ export class CloudflareEmailSender {
     try {
       const response = await this.client.emailSending.send({
         account_id: this.config.accountId,
-        from: { address: this.config.from, name: "Karimla" },
+        from: { address: this.config.from, name: "Yappi" },
         html,
         subject: context.subject,
-        text: `Your Karimla verification code is ${otp}. It expires in 10 minutes.`,
+        text: `Your Yappi verification code is ${otp}. It expires in 10 minutes.`,
         to: email,
       })
       const delivery = {

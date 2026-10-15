@@ -1,10 +1,10 @@
-# Karimla auth architecture guidance
+# Yappi auth architecture guidance
 
 This document is the active architecture guidance for `apps/auth/`. The scoped runtime instructions are in `apps/auth/AGENTS.md`; the full reference index is [architecture/_index.md](architecture/_index.md); feature rules belong under `guides/`; ports are recorded in `.docs/ports.md`.
 
 ## Identity ownership
 
-BetterAuth is Karimla's canonical identity owner. It owns:
+BetterAuth is Yappi's canonical identity owner. It owns:
 
 - users
 - accounts

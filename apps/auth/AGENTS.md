@@ -1,4 +1,4 @@
-# Karimla auth instructions
+# Yappi auth instructions
 
 ## Required context
 

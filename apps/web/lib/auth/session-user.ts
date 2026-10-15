@@ -1,9 +1,9 @@
-export type KarimlaSession = {
+export type YappiSession = {
   email: string | null
   name: string | null
 }
 
-export function toKarimlaSession(payload: unknown): KarimlaSession | null {
+export function toYappiSession(payload: unknown): YappiSession | null {
   if (!payload || typeof payload !== "object") return null
 
   const user =

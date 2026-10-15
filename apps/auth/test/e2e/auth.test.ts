@@ -9,7 +9,7 @@ describe("email OTP sign-in", () => {
   it("creates a user and session from a one-time email code", async () => {
     let sentOtp = ""
     const auth = betterAuth({
-      appName: "Karimla",
+      appName: "Yappi",
       baseURL: authOrigin,
       basePath: "/api/v1/auth",
       secret: "test-secret-that-is-at-least-32-characters-long",

@@ -3,21 +3,22 @@
 import type * as React from "react"
 
 import { Field } from "@packages/ui-w/shared/field/field"
+import { FieldLabel } from "@packages/ui-w/shared/field/field-label"
 import { Input } from "@packages/ui-w/shared/input/input"
 
-export function InviteCodeField(): React.ReactElement {
+export function GroupPhraseField(): React.ReactElement {
   return (
     <Field className="w-full">
+      <FieldLabel htmlFor="phrase">Phrase to count</FieldLabel>
       <Input
-        aria-label="Invite code"
-        autoCapitalize="characters"
+        aria-label="Phrase to count"
         autoComplete="off"
-        className="w-full text-center tracking-widest"
-        id="code"
-        maxLength={8}
-        name="code"
+        className="w-full"
+        id="phrase"
+        maxLength={60}
+        name="phrase"
         nativeInput
-        placeholder="ABCDEFGH"
+        placeholder="Oh my goodness"
         required
         size="lg"
         spellCheck={false}

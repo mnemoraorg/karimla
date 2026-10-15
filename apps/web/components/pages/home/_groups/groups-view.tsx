@@ -1,11 +1,13 @@
 "use client"
 
-import Link from "next/link"
 import type * as React from "react"
 
 import { useGroups } from "@/hooks/api/use-groups"
 
-import { Button } from "@packages/ui-w/shared/button/button"
+import { GroupCard } from "@/components/pages/home/_card/group-card"
+import { CreateAGroupDialog } from "@/components/pages/home/_dialog/create-a-group-dialog"
+import { JoinAGroupDialog } from "@/components/pages/home/_dialog/join-a-group-dialog"
+import { PageHeader } from "@/components/shared/_header/page-header"
 
 export function GroupsView(): React.ReactElement {
   const groups = useGroups()
@@ -22,53 +24,40 @@ export function GroupsView(): React.ReactElement {
     )
   }
 
+  const groupActions = (
+    <footer className="bg-background/95 border-border fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-md flex-col gap-3 border-t px-6 pt-4 pb-[calc(env(safe-area-inset-bottom,0px)+--spacing(4))] backdrop-blur">
+      <CreateAGroupDialog />
+      <JoinAGroupDialog />
+    </footer>
+  )
+
   if (groups.data.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-4 text-center">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold">No groups yet</h1>
-          <p className="text-muted-foreground text-sm">
-            Start one with a phrase to count, or join your friends with a code.
-          </p>
+      <>
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-xl font-semibold">No groups yet</h1>
+            <p className="text-muted-foreground text-sm">
+              Start one with a phrase to count, or join your friends with a code.
+            </p>
+          </div>
         </div>
-        <div className="flex w-full gap-3">
-          <Button className="flex-1" render={<Link href="/groups/new" />}>
-            New group
-          </Button>
-          <Button className="flex-1" render={<Link href="/groups/join" />}>
-            Join
-          </Button>
-        </div>
-      </div>
+        {groupActions}
+      </>
     )
   }
 
   return (
-    <div className="flex w-full flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Your groups</h1>
-        <div className="flex gap-3">
-          <Button size="sm" variant="link" render={<Link href="/groups/join" />}>
-            Join
-          </Button>
-          <Button size="sm" variant="link" render={<Link href="/groups/new" />}>
-            New group
-          </Button>
-        </div>
-      </div>
+    <div className="flex min-h-[calc(100svh-10rem)] w-full flex-col gap-4 pt-20 pb-32">
+      <PageHeader fixed title="Your groups" />
       <ul className="flex flex-col gap-3">
         {groups.data.map((group) => (
           <li key={group.id}>
-            <Link
-              href={`/groups/${group.id}`}
-              className="border-border bg-card block rounded-2xl border p-5"
-            >
-              <p className="font-semibold">{group.name}</p>
-              <p className="text-muted-foreground text-sm">Count every “{group.phrase}”</p>
-            </Link>
+            <GroupCard group={group} />
           </li>
         ))}
       </ul>
+      {groupActions}
     </div>
   )
 }

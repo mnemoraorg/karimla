@@ -4,26 +4,26 @@ import type * as React from "react"
 
 import { Button } from "@packages/ui-w/shared/button/button"
 
-type IncrementButtonProps = {
+type DecrementButtonProps = {
   disabled?: boolean
-  pending?: boolean
+  memberName: string
   onClick: () => void
 }
 
-export function IncrementButton({
+export function DecrementButton({
   disabled,
-  pending,
+  memberName,
   onClick,
-}: IncrementButtonProps): React.ReactElement {
+}: DecrementButtonProps): React.ReactElement {
   return (
     <Button
-      aria-label="Count one more karimla"
+      aria-label={`Count one fewer for ${memberName}`}
       className="flex-1"
       size="lg"
       disabled={disabled}
       onClick={onClick}
     >
-      {pending ? "Counting…" : "+"}
+      −
     </Button>
   )
 }

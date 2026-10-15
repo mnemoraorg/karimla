@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation"
 import { useCreateGroup } from "@/hooks/api/use-groups"
 
 import { Button } from "@packages/ui-w/shared/button/button"
-import { GroupNameField } from "@/components/pages/groups/_fields/group-name-field"
-import { GroupPhraseField } from "@/components/pages/groups/_fields/group-phrase-field"
+import { GroupNameField } from "@/components/pages/home/_field/group-name-field"
+import { GroupPhraseField } from "@/components/pages/home/_field/group-phrase-field"
 
 export function CreateGroupForm(): React.ReactElement {
   const router = useRouter()

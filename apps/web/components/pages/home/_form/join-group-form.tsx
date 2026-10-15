@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import { useJoinGroup } from "@/hooks/api/use-groups"
 
 import { Button } from "@packages/ui-w/shared/button/button"
-import { InviteCodeField } from "@/components/pages/groups/_fields/invite-code-field"
+import { InviteCodeField } from "@/components/pages/home/_field/invite-code-field"
 
 export function JoinGroupForm(): React.ReactElement {
   const router = useRouter()

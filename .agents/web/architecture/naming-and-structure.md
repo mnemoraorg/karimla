@@ -17,10 +17,18 @@ apps/web/
 │   │   └── login/
 │   │       └── page.tsx
 │   └── (protected)/
-│       └── page.tsx
+│       ├── layout.tsx
+│       ├── page.tsx
+│       └── groups/
+│           ├── new/
+│           │   └── page.tsx
+│           ├── join/
+│           │   └── page.tsx
+│           └── [id]/
+│               └── page.tsx
 ├── api/
 │   ├── client.ts
-│   ├── counter.ts
+│   ├── groups.ts
 │   └── auth/
 │       ├── client.ts
 │       ├── send-otp.ts
@@ -28,46 +36,58 @@ apps/web/
 │       ├── sign-in.ts
 │       └── sign-out.ts
 ├── components/
-│   └── pages/
-│       ├── home/
-│       │   ├── karimla-counter.tsx
-│       │   ├── _button/
-│       │   │   ├── decrement-button.tsx
-│       │   │   └── increment-button.tsx
-│       │   └── _leaderboard/
-│       │       └── leaderboard.tsx
-│       │   └── _menu/
-│       │       └── user-menu.tsx
-│       └── login/
-│           ├── _fields/
-│           │   ├── login-field.tsx
-│           │   └── otp-field.tsx
-│           └── _form/
-│               └── login-form.tsx
-├── shared/
-│   ├── _button/
-│   │   └── sign-out-button.tsx
-│   └── _sheet/
-│       └── user-sheet.tsx
+│   ├── pages/
+│   │   ├── home/
+│   │   │   └── _groups/
+│   │   │       └── groups-view.tsx
+│   │   ├── groups/
+│   │   │   ├── _detail/
+│   │   │   │   └── group-detail-view.tsx
+│   │   │   ├── _fields/
+│   │   │   │   ├── group-name-field.tsx
+│   │   │   │   ├── group-phrase-field.tsx
+│   │   │   │   └── invite-code-field.tsx
+│   │   │   ├── _form/
+│   │   │   │   ├── create-group-form.tsx
+│   │   │   │   └── join-group-form.tsx
+│   │   │   └── _leaderboard/
+│   │   │       └── leaderboard.tsx
+│   │   └── login/
+│   │       ├── _fields/
+│   │       │   ├── login-field.tsx
+│   │       │   └── otp-field.tsx
+│   │       └── _form/
+│   │           └── login-form.tsx
+│   └── shared/
+│       ├── _button/
+│       │   ├── decrement-button.tsx
+│       │   ├── increment-button.tsx
+│       │   └── sign-out-button.tsx
+│       └── _sheet/
+│           └── user-sheet.tsx
 ├── hooks/
 │   └── api/
-│       ├── use-counter.ts
+│       ├── use-groups.ts
 │       └── auth/
 │           ├── use-send-otp.ts
 │           ├── use-session.ts
 │           ├── use-sign-in.ts
 │           └── use-sign-out.ts
 ├── lib/
-│   └── auth/
-│       ├── session.ts
-│       └── session-user.ts
+│   ├── auth/
+│   │   ├── session.ts
+│   │   └── session-user.ts
+│   └── login.ts
 ├── providers/
 │   └── query-provider.tsx
 ├── test/
 │   └── unit/
 │       ├── api/
-│       │   └── otp.test.mjs
+│       │   ├── groups.test.mjs
+│       │   ├── otp.test.mjs
+│       │   └── session.test.mjs
 │       └── lib/
+│           ├── login.test.mjs
 │           └── session-user.test.mjs
 ├── package.json
 └── tsconfig.json

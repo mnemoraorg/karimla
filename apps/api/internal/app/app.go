@@ -18,9 +18,7 @@ import (
 	"github.com/mnemoraorg/yappi/apps/api/internal/config"
 	deliveryhttp "github.com/mnemoraorg/yappi/apps/api/internal/delivery/http"
 	v1 "github.com/mnemoraorg/yappi/apps/api/internal/delivery/http/v1"
-	counterservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/counter/service"
 	groupservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/group/service"
-	counterhandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/counter"
 	grouphandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/group"
 )
 
@@ -61,12 +59,10 @@ func New(cfg config.Config) (*Application, error) {
 	var dependencies v1.Dependencies
 	if store != nil {
 		sessionClient := betterauth.NewSessionClient(cfg.AuthBaseURL)
-		counterService := counterservice.NewService(store.Counters())
 		groupService := groupservice.NewService(store.Groups(), store.GroupCounts())
 		dependencies = v1.Dependencies{
-			Counter: counterhandler.New(counterService),
-			Groups:  grouphandler.New(groupService),
-			Auth:    sessionClient,
+			Groups: grouphandler.New(groupService),
+			Auth:   sessionClient,
 		}
 	}
 	deliveryhttp.Register(server, dependencies)

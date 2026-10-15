@@ -15,8 +15,9 @@ import { CardTitle } from "@packages/ui-w/shared/card/card-title"
 
 export function GroupCard({ group }: { group: GroupListItem }): React.ReactElement {
   const session = useSession()
-  const visibleMembers = group.members
-  const additionalMembers = group.member_count - visibleMembers.length
+  const visibleMembers = group.members ?? []
+  const memberCount = group.member_count ?? visibleMembers.length
+  const additionalMembers = Math.max(memberCount - visibleMembers.length, 0)
 
   return (
     <Link href={`/groups/${group.id}`} className="block rounded-xl">
@@ -27,7 +28,7 @@ export function GroupCard({ group }: { group: GroupListItem }): React.ReactEleme
             <CardDescription>Count every “{group.phrase}”</CardDescription>
           </div>
           <div
-            aria-label={`${group.member_count} members`}
+            aria-label={`${memberCount} members`}
             className="flex shrink-0 -space-x-2"
             role="group"
           >

@@ -10,7 +10,9 @@ import { useSession } from "@/hooks/api/auth/use-session"
 
 import { Button } from "@packages/ui-w/shared/button/button"
 import { SpinnerFlicker01 } from "@packages/ui-w/shared/spinner-variant/spinner-flicker-01"
+
 import { GroupMemberCountCard } from "@/components/pages/groups/id/_card/group-member-count-card"
+import { GroupInviteActions } from "@/components/pages/groups/id/_invite/group-invite-actions"
 import { PageHeader } from "@/components/shared/_header/page-header"
 
 export default function Page(): React.ReactElement {
@@ -59,7 +61,7 @@ export default function Page(): React.ReactElement {
   }
 
   return (
-    <div className="flex min-h-[calc(100svh-10rem)] w-full flex-col gap-4 pt-8">
+    <div className="flex min-h-[calc(100svh-10rem)] w-full flex-col gap-4 pt-8 pb-40">
       <PageHeader
         fixed
         leading={
@@ -104,6 +106,7 @@ export default function Page(): React.ReactElement {
           {mutationError.message}
         </p>
       )}
+      <GroupInviteActions group={groupData.group} />
     </div>
   )
 }

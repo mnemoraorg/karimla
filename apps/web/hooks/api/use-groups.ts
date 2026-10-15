@@ -13,7 +13,7 @@ import {
 } from "@/api/groups"
 
 export function useGroups() {
-  return useQuery({ queryKey: ["groups"], queryFn: listGroups })
+  return useQuery({ queryKey: ["groups", "with-member-previews"], queryFn: listGroups })
 }
 
 export function useCreateGroup() {

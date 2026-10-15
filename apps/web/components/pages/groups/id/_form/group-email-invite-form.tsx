@@ -8,7 +8,8 @@ import type { Group } from "@/api/groups"
 import { useSendGroupInvitations } from "@/hooks/api/use-groups"
 
 import { toastManager } from "@packages/ui-w/providers/toast-provider"
-import { Badge } from "@packages/ui-w/shared/badge/badge"
+import { Avatar } from "@packages/ui-w/shared/avatar/avatar"
+import { AvatarFallback } from "@packages/ui-w/shared/avatar/avatar-fallback"
 import { Button } from "@packages/ui-w/shared/button/button"
 import { DrawerFooter } from "@packages/ui-w/shared/drawer/drawer-footer"
 import { Field } from "@packages/ui-w/shared/field/field"
@@ -107,48 +108,54 @@ export function GroupEmailInviteForm({
   return (
     <form className="flex flex-col gap-4" noValidate onSubmit={handleSubmit}>
       <Field>
-        <FieldLabel htmlFor="group-invite-email">Email addresses</FieldLabel>
-        <div className="bg-muted border-input focus-within:border-ring focus-within:ring-ring/24 flex min-h-11 w-full flex-wrap items-center gap-1.5 rounded-xl border p-1.5 focus-within:ring-[3px]">
+        <FieldLabel htmlFor="group-invite-email">Add an email address</FieldLabel>
+        <Input
+          aria-describedby="group-invite-email-help"
+          autoComplete="off"
+          disabled={sendInvitations.isPending || recipients.length >= 10}
+          id="group-invite-email"
+          maxLength={254}
+          onChange={(event) => {
+            setEmail(event.target.value)
+            setError("")
+          }}
+          onKeyDown={handleEmailKeyDown}
+          placeholder={recipients.length === 0 ? "name@example.com" : "Add another email address"}
+          ref={inputRef}
+          type="email"
+          value={email}
+        />
+        <p className="text-muted-foreground text-sm" id="group-invite-email-help">
+          Press Enter to add each address. Invite up to 10 people.
+        </p>
+      </Field>
+      {recipients.length > 0 && (
+        <ul
+          aria-label="Invitation recipients"
+          className="divide-border divide-y overflow-hidden rounded-xl border"
+        >
           {recipients.map((recipient) => (
-            <Badge className="max-w-full gap-1" key={recipient} size="lg" variant="secondary">
-              <span className="max-w-52 truncate">{recipient}</span>
-              <button
+            <li className="flex min-w-0 items-center gap-3 px-3 py-2" key={recipient}>
+              <Avatar aria-hidden className="size-8">
+                <AvatarFallback>{recipient.charAt(0).toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <span className="min-w-0 flex-1 truncate text-sm">{recipient}</span>
+              <Button
                 aria-label={`Remove ${recipient}`}
-                className="text-muted-foreground hover:text-foreground focus-visible:outline-ring inline-flex size-5 shrink-0 items-center justify-center rounded-full focus-visible:outline-2"
                 disabled={sendInvitations.isPending}
                 onClick={() => {
                   setRecipients(recipients.filter((emailAddress) => emailAddress !== recipient))
                   setError("")
                 }}
-                type="button"
+                size="icon-xs"
+                variant="ghost"
               >
-                <IconX aria-hidden size={12} />
-              </button>
-            </Badge>
+                <IconX aria-hidden />
+              </Button>
+            </li>
           ))}
-          <Input
-            aria-describedby="group-invite-email-help"
-            autoComplete="off"
-            className="min-w-36 flex-1"
-            disabled={sendInvitations.isPending || recipients.length >= 10}
-            id="group-invite-email"
-            maxLength={254}
-            onChange={(event) => {
-              setEmail(event.target.value)
-              setError("")
-            }}
-            onKeyDown={handleEmailKeyDown}
-            placeholder={recipients.length === 0 ? "name@example.com" : undefined}
-            ref={inputRef}
-            type="email"
-            unstyled
-            value={email}
-          />
-        </div>
-        <p className="text-muted-foreground text-sm" id="group-invite-email-help">
-          Press Enter after each address. Invite up to 10 people.
-        </p>
-      </Field>
+        </ul>
+      )}
       {error && (
         <p className="text-destructive text-sm" role="alert">
           {error}

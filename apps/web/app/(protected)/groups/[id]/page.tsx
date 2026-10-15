@@ -12,7 +12,8 @@ import { Button } from "@packages/ui-w/shared/button/button"
 import { SpinnerFlicker01 } from "@packages/ui-w/shared/spinner-variant/spinner-flicker-01"
 
 import { GroupMemberCountCard } from "@/components/pages/groups/id/_card/group-member-count-card"
-import { GroupInviteFooter } from "@/components/pages/groups/id/_footer/group-invite-footer"
+import { ShareInviteCodeButton } from "@/components/pages/groups/id/_button/share-invite-code-button"
+import { GroupEmailInviteDrawer } from "@/components/pages/groups/id/_drawer/group-email-invite-drawer"
 import { PageHeader } from "@/components/shared/_header/page-header"
 
 export default function Page(): React.ReactElement {
@@ -106,7 +107,10 @@ export default function Page(): React.ReactElement {
           {mutationError.message}
         </p>
       )}
-      <GroupInviteFooter group={groupData.group} />
+      <footer className="bg-background/95 border-border fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-md flex-col gap-3 border-t px-6 pt-4 pb-[calc(env(safe-area-inset-bottom,0px)+--spacing(4))] backdrop-blur">
+        <GroupEmailInviteDrawer group={groupData.group} />
+        <ShareInviteCodeButton group={groupData.group} />
+      </footer>
     </div>
   )
 }

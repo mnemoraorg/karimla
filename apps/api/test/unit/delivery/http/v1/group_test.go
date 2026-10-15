@@ -43,7 +43,9 @@ func (f *fakeGroups) CreateGroup(
 	}
 	f.groups[created.ID] = created
 	f.byCode[created.InviteCode] = created.ID
-	f.members[created.ID] = map[string]group.Member{params.CreatedBy: {AuthUserID: params.CreatedBy}}
+	f.members[created.ID] = map[string]group.Member{
+		params.CreatedBy: {AuthUserID: params.CreatedBy, DisplayName: strings.Clone(params.CreatorDisplay)},
+	}
 	return created, nil
 }
 
@@ -58,12 +60,20 @@ func (f *fakeGroups) GetGroup(_ context.Context, groupID string) (group.Group, e
 func (f *fakeGroups) ListGroupsForUser(
 	_ context.Context,
 	authUserID string,
-) ([]group.Group, error) {
-	var found []group.Group
+) ([]group.GroupSummary, error) {
+	var found []group.GroupSummary
 	for id, members := range f.members {
-		if _, ok := members[authUserID]; ok {
-			found = append(found, f.groups[id])
+		if _, ok := members[authUserID]; !ok {
+			continue
 		}
+		summary := group.GroupSummary{Group: f.groups[id]}
+		for _, member := range members {
+			summary.Members = append(summary.Members, group.GroupMemberPreview{
+				AuthUserID:  member.AuthUserID,
+				DisplayName: member.DisplayName,
+			})
+		}
+		found = append(found, summary)
 	}
 	return found, nil
 }
@@ -223,6 +233,29 @@ func TestGroupRoutesServeMembers(t *testing.T) {
 	joinBody := `{"code":` + strconv.Quote(created.Data.InviteCode) + `}`
 	if status, joinOut := groupRequest(t, app, "POST", joinTarget, "user-2", joinBody); status != fiber.StatusOK {
 		t.Fatalf("status = %d, want %d (body %s)", status, fiber.StatusOK, joinOut)
+	}
+	if status, joinOut := groupRequest(t, app, "POST", joinTarget, "user-3", joinBody); status != fiber.StatusOK {
+		t.Fatalf("status = %d, want %d (body %s)", status, fiber.StatusOK, joinOut)
+	}
+
+	status, listBody := groupRequest(t, app, "GET", "/api/v1/groups", "user-1", "")
+	var listed struct {
+		Data []struct {
+			ID          string `json:"id"`
+			MemberCount int    `json:"member_count"`
+			Members     []struct {
+				UserID string `json:"user_id"`
+				You    bool   `json:"you"`
+			} `json:"members"`
+		} `json:"data"`
+	}
+	if status != fiber.StatusOK || json.Unmarshal([]byte(listBody), &listed) != nil {
+		t.Fatalf("status = %d, body = %s, want groups with member previews", status, listBody)
+	}
+	if len(listed.Data) != 1 || listed.Data[0].MemberCount != 3 ||
+		len(listed.Data[0].Members) != 2 || listed.Data[0].Members[0].UserID != "user-1" ||
+		!listed.Data[0].Members[0].You {
+		t.Fatalf("group list = %+v, want two previews out of three members with caller first", listed.Data)
 	}
 
 	incrementTarget := "/api/v1/groups/" + created.Data.ID + "/members/user-2/increment"

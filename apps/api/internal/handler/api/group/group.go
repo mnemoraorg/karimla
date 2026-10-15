@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
-	groupservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/group/service"
 	domaingroup "github.com/mnemoraorg/yappi/apps/api/internal/domain/group"
+	groupservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/group/service"
 	"github.com/mnemoraorg/yappi/apps/api/internal/shared/response"
 )
 
@@ -14,6 +14,18 @@ type GroupResponse struct {
 	Name       string `json:"name"`
 	Phrase     string `json:"phrase"`
 	InviteCode string `json:"invite_code"`
+}
+
+type GroupMemberPreviewResponse struct {
+	UserID      string `json:"user_id"`
+	DisplayName string `json:"display_name"`
+	You         bool   `json:"you"`
+}
+
+type GroupListResponse struct {
+	GroupResponse
+	MemberCount int                          `json:"member_count"`
+	Members     []GroupMemberPreviewResponse `json:"members"`
 }
 
 type CountResponse struct {
@@ -28,7 +40,7 @@ type MemberResponse struct {
 }
 
 type GroupDetailResponse struct {
-	Group   GroupResponse   `json:"group"`
+	Group   GroupResponse    `json:"group"`
 	Members []MemberResponse `json:"members"`
 }
 
@@ -78,6 +90,26 @@ func writeServiceError(
 
 func mapGroup(group domaingroup.Group) GroupResponse {
 	return GroupResponse{ID: group.ID, Name: group.Name, Phrase: group.Phrase, InviteCode: group.InviteCode}
+}
+
+func mapGroupSummary(summary domaingroup.GroupSummary) GroupListResponse {
+	previewMembers := summary.Members
+	if len(previewMembers) > 2 {
+		previewMembers = previewMembers[:2]
+	}
+	members := make([]GroupMemberPreviewResponse, 0, len(previewMembers))
+	for _, member := range previewMembers {
+		members = append(members, GroupMemberPreviewResponse{
+			UserID:      member.AuthUserID,
+			DisplayName: member.DisplayName,
+			You:         member.You,
+		})
+	}
+	return GroupListResponse{
+		GroupResponse: mapGroup(summary.Group),
+		MemberCount:   len(summary.Members),
+		Members:       members,
+	}
 }
 
 func mapDetail(detail domaingroup.GroupDetail) GroupDetailResponse {

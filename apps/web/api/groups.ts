@@ -19,8 +19,13 @@ export type GroupDetail = {
   members: GroupMember[]
 }
 
-export async function listGroups(): Promise<Group[]> {
-  return apiRequest<Group[]>("/groups")
+export type GroupListItem = Group & {
+  member_count: number
+  members: Pick<GroupMember, "user_id" | "display_name" | "you">[]
+}
+
+export async function listGroups(): Promise<GroupListItem[]> {
+  return apiRequest<GroupListItem[]>("/groups")
 }
 
 export type CreateGroupInput = {

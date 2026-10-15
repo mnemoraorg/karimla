@@ -33,7 +33,9 @@ func (f *fakeGroups) CreateGroup(
 	}
 	f.groups[created.ID] = created
 	f.byCode[created.InviteCode] = created.ID
-	f.members[created.ID] = map[string]group.Member{params.CreatedBy: {AuthUserID: params.CreatedBy}}
+	f.members[created.ID] = map[string]group.Member{
+		params.CreatedBy: {AuthUserID: params.CreatedBy, DisplayName: params.CreatorDisplay},
+	}
 	return created, nil
 }
 
@@ -48,12 +50,20 @@ func (f *fakeGroups) GetGroup(_ context.Context, groupID string) (group.Group, e
 func (f *fakeGroups) ListGroupsForUser(
 	_ context.Context,
 	authUserID string,
-) ([]group.Group, error) {
-	var found []group.Group
+) ([]group.GroupSummary, error) {
+	var found []group.GroupSummary
 	for id, members := range f.members {
-		if _, ok := members[authUserID]; ok {
-			found = append(found, f.groups[id])
+		if _, ok := members[authUserID]; !ok {
+			continue
 		}
+		summary := group.GroupSummary{Group: f.groups[id]}
+		for _, member := range members {
+			summary.Members = append(summary.Members, group.GroupMemberPreview{
+				AuthUserID:  member.AuthUserID,
+				DisplayName: member.DisplayName,
+			})
+		}
+		found = append(found, summary)
 	}
 	return found, nil
 }
@@ -181,6 +191,33 @@ func TestMemberCountingRequiresMembershipBothWays(t *testing.T) {
 	}
 	if count, err := service.DecrementMember(ctx, "user-2", created.ID, "user-2"); err != nil || count != 0 {
 		t.Fatalf("count = %d, err = %v, want 0, nil", count, err)
+	}
+}
+
+func TestListGroupsIncludesPreviewsAndPutsCallerFirst(t *testing.T) {
+	service := newService()
+	ctx := context.Background()
+
+	created, err := service.CreateGroup(ctx, "user-1", "User One", "Crew", "karimla")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := service.JoinGroup(ctx, "user-2", "User Two", created.InviteCode); err != nil {
+		t.Fatal(err)
+	}
+
+	groups, err := service.ListGroups(ctx, "user-1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(groups) != 1 || len(groups[0].Members) != 2 {
+		t.Fatalf("groups = %+v, want one group with two members", groups)
+	}
+	if !groups[0].Members[0].You || groups[0].Members[0].AuthUserID != "user-1" {
+		t.Fatalf("first preview = %+v, want caller first", groups[0].Members[0])
+	}
+	if groups[0].Members[1].You || groups[0].Members[1].AuthUserID != "user-2" {
+		t.Fatalf("second preview = %+v, want other member", groups[0].Members[1])
 	}
 }
 

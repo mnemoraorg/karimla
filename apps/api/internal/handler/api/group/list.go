@@ -14,9 +14,9 @@ func (h *Handlers) ListGroups(c *fiber.Ctx) error {
 			"Could not load groups", "The groups could not be loaded", "group.list.failed")
 	}
 
-	groups := make([]GroupResponse, 0, len(found))
+	groups := make([]GroupListResponse, 0, len(found))
 	for _, entry := range found {
-		groups = append(groups, mapGroup(entry))
+		groups = append(groups, mapGroupSummary(entry))
 	}
 	return response.JSON(c, fiber.StatusOK, response.Success(
 		groups, "Groups loaded", c, "group.list.completed", principal.AuthUserID, "ok",

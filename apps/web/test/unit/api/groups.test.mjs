@@ -22,10 +22,21 @@ describe("listGroups", () => {
     let request
     globalThis.fetch = async (url, init) => {
       request = { url: String(url), init }
-      return envelope([])
+      return envelope([
+        {
+          id: "g1",
+          name: "Crew",
+          phrase: "karimla",
+          invite_code: "ABCDEFGH",
+          member_count: 1,
+          members: [{ user_id: "u1", display_name: "User One", you: true }],
+        },
+      ])
     }
 
-    await expect(listGroups()).resolves.toEqual([])
+    await expect(listGroups()).resolves.toMatchObject([
+      { id: "g1", member_count: 1, members: [{ user_id: "u1", you: true }] },
+    ])
     expect(request.url).toBe("https://api.example/api/v1/groups")
     expect(request.init.credentials).toBe("include")
   })

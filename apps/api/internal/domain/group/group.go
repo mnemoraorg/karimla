@@ -38,18 +38,29 @@ type GroupDetail struct {
 	Members []MemberCount
 }
 
+type GroupSummary struct {
+	Group   Group
+	Members []GroupMemberPreview
+}
+
+type GroupMemberPreview struct {
+	AuthUserID  string
+	DisplayName string
+	You         bool
+}
+
 type NewGroup struct {
-	Name            string
-	Phrase          string
-	InviteCode      string
-	CreatedBy       string
-	CreatorDisplay  string
+	Name           string
+	Phrase         string
+	InviteCode     string
+	CreatedBy      string
+	CreatorDisplay string
 }
 
 type Repository interface {
 	CreateGroup(ctx context.Context, params NewGroup) (Group, error)
 	GetGroup(ctx context.Context, groupID string) (Group, error)
-	ListGroupsForUser(ctx context.Context, authUserID string) ([]Group, error)
+	ListGroupsForUser(ctx context.Context, authUserID string) ([]GroupSummary, error)
 	FindGroupByCode(ctx context.Context, code string) (Group, error)
 	AddMember(ctx context.Context, groupID string, member Member) error
 	ListMembers(ctx context.Context, groupID string) ([]Member, error)

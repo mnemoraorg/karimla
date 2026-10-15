@@ -71,7 +71,7 @@ func (r *Group) GetGroup(ctx context.Context, groupID string) (domaingroup.Group
 func (r *Group) ListGroupsForUser(
 	ctx context.Context,
 	authUserID string,
-) ([]domaingroup.Group, error) {
+) ([]domaingroup.GroupSummary, error) {
 	memberships, err := r.client.GroupMember.Query().
 		Where(groupmember.AuthUserIDEQ(authUserID)).
 		All(ctx)
@@ -79,12 +79,17 @@ func (r *Group) ListGroupsForUser(
 		return nil, err
 	}
 	ids := make([]uuid.UUID, 0, len(memberships))
+	groupIDs := make([]string, 0, len(memberships))
 	for _, membership := range memberships {
 		id, err := uuid.Parse(membership.GroupID)
 		if err != nil {
 			continue
 		}
 		ids = append(ids, id)
+		groupIDs = append(groupIDs, membership.GroupID)
+	}
+	if len(ids) == 0 {
+		return []domaingroup.GroupSummary{}, nil
 	}
 	rows, err := r.client.Group.Query().
 		Where(group.IDIn(ids...)).
@@ -93,9 +98,35 @@ func (r *Group) ListGroupsForUser(
 	if err != nil {
 		return nil, err
 	}
-	found := make([]domaingroup.Group, 0, len(rows))
+	memberRows, err := r.client.GroupMember.Query().
+		Where(groupmember.GroupIDIn(groupIDs...)).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	found := make([]domaingroup.GroupSummary, 0, len(rows))
+	groupIndexes := make(map[string]int, len(rows))
 	for _, row := range rows {
-		found = append(found, mapGroup(row))
+		groupID := row.ID.String()
+		groupIndexes[groupID] = len(found)
+		found = append(found, domaingroup.GroupSummary{
+			Group:   mapGroup(row),
+			Members: []domaingroup.GroupMemberPreview{},
+		})
+	}
+	for _, row := range memberRows {
+		index, ok := groupIndexes[row.GroupID]
+		if !ok {
+			continue
+		}
+		name := row.DisplayName
+		if name == "" {
+			name = row.AuthUserID
+		}
+		found[index].Members = append(found[index].Members, domaingroup.GroupMemberPreview{
+			AuthUserID:  row.AuthUserID,
+			DisplayName: name,
+		})
 	}
 	return found, nil
 }

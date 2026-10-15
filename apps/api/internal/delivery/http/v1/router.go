@@ -25,6 +25,7 @@ func Register(router fiber.Router, dependencies Dependencies) {
 		groups.Get("", dependencies.Groups.ListGroups)
 		groups.Post("/join", dependencies.Groups.JoinGroup)
 		groups.Get("/:id", dependencies.Groups.GetGroup)
+		groups.Post("/:id/invitations", dependencies.Groups.SendInvitations)
 		groups.Post("/:id/members/:userId/increment", dependencies.Groups.IncrementMember)
 		groups.Post("/:id/members/:userId/decrement", dependencies.Groups.DecrementMember)
 	}

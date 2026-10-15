@@ -2,17 +2,25 @@ package config
 
 import (
 	"fmt"
+	"net/mail"
 	"os"
 	"strconv"
 	"strings"
 )
 
 type Config struct {
-	Environment string
-	Port        int
-	DatabaseURL string
-	AuthBaseURL string
-	CORS        CORSConfig
+	Environment   string
+	Port          int
+	DatabaseURL   string
+	AuthBaseURL   string
+	EmailDelivery EmailDeliveryConfig
+	CORS          CORSConfig
+}
+
+type EmailDeliveryConfig struct {
+	CloudflareAPIToken  string
+	CloudflareAccountID string
+	InvitationEmail     string
 }
 
 type CORSConfig struct {
@@ -32,11 +40,37 @@ func Load() (Config, error) {
 		return Config{}, fmt.Errorf("PORT must be between 1 and 65535")
 	}
 
+	emailDelivery := EmailDeliveryConfig{
+		CloudflareAPIToken:  value("CLOUDFLARE_API_TOKEN", ""),
+		CloudflareAccountID: value("CLOUDFLARE_ACCOUNT_ID", ""),
+		InvitationEmail:     value("INVITATION_EMAIL", ""),
+	}
+	configuredEmailValues := 0
+	for _, configured := range []string{
+		emailDelivery.CloudflareAPIToken,
+		emailDelivery.CloudflareAccountID,
+		emailDelivery.InvitationEmail,
+	} {
+		if configured != "" {
+			configuredEmailValues++
+		}
+	}
+	if configuredEmailValues != 0 && configuredEmailValues != 3 {
+		return Config{}, fmt.Errorf("CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, and INVITATION_EMAIL must be configured together")
+	}
+	if emailDelivery.InvitationEmail != "" {
+		parsed, err := mail.ParseAddress(emailDelivery.InvitationEmail)
+		if err != nil || parsed.Address != emailDelivery.InvitationEmail {
+			return Config{}, fmt.Errorf("INVITATION_EMAIL must be a valid email address")
+		}
+	}
+
 	return Config{
-		Environment: value("ENVIRONMENT", "development"),
-		Port:        port,
-		DatabaseURL: value("DATABASE_URL", ""),
-		AuthBaseURL: strings.TrimRight(value("AUTH_BASE_URL", "http://localhost:35081"), "/"),
+		Environment:   value("ENVIRONMENT", "development"),
+		Port:          port,
+		DatabaseURL:   value("DATABASE_URL", ""),
+		AuthBaseURL:   strings.TrimRight(value("AUTH_BASE_URL", "http://localhost:35081"), "/"),
+		EmailDelivery: emailDelivery,
 		CORS: CORSConfig{
 			AllowedOrigins:   list(value("CORS_ALLOWED_ORIGINS", "http://localhost:35000")),
 			AllowedMethods:   list(value("CORS_ALLOWED_METHODS", "GET,POST,PUT,DELETE,PATCH,OPTIONS")),

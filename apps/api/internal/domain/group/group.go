@@ -13,6 +13,10 @@ var ErrInvalidInput = errors.New("invalid group input")
 
 var ErrCodeTaken = errors.New("invite code taken")
 
+var ErrInvitationsUnavailable = errors.New("group invitations unavailable")
+
+const MaxInvitationRecipients = 10
+
 type Group struct {
 	ID         string
 	Name       string
@@ -72,4 +76,8 @@ type CountRepository interface {
 	ListCounts(ctx context.Context, groupID string) (map[string]int, error)
 	Increment(ctx context.Context, groupID, authUserID string) (int, error)
 	Decrement(ctx context.Context, groupID, authUserID string) (int, error)
+}
+
+type InvitationSender interface {
+	SendGroupInvitations(ctx context.Context, recipients []string, group Group) error
 }

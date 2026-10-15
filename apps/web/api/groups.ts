@@ -60,6 +60,23 @@ export async function getGroup(id: string): Promise<GroupDetail> {
   return apiRequest<GroupDetail>(`/groups/${id}`)
 }
 
+export async function sendGroupInvitations(groupId: string, emails: string[]): Promise<number> {
+  const recipients = emails.map((email) => email.trim()).filter(Boolean)
+  if (!groupId || recipients.length === 0 || recipients.length > 10) {
+    throw new Error("Enter up to 10 email addresses to invite.")
+  }
+
+  const response = await apiRequest<{ sent_count: number }>(
+    `/groups/${encodeURIComponent(groupId)}/invitations`,
+    {
+      method: "POST",
+      body: JSON.stringify({ emails: recipients }),
+      signal: AbortSignal.timeout(15_000),
+    },
+  )
+  return response.sent_count
+}
+
 export async function incrementMember(groupId: string, userId: string): Promise<number> {
   const response = await apiRequest<{ count: number }>(
     `/groups/${groupId}/members/${userId}/increment`,

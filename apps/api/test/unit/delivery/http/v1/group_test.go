@@ -44,7 +44,7 @@ func (f *fakeGroups) CreateGroup(
 	f.groups[created.ID] = created
 	f.byCode[created.InviteCode] = created.ID
 	f.members[created.ID] = map[string]group.Member{
-		params.CreatedBy: {AuthUserID: params.CreatedBy, DisplayName: strings.Clone(params.CreatorDisplay)},
+		created.CreatedBy: {AuthUserID: created.CreatedBy, DisplayName: strings.Clone(params.CreatorDisplay)},
 	}
 	return created, nil
 }
@@ -125,6 +125,21 @@ type fakeCounts struct {
 	rows map[string]map[string]int
 }
 
+type fakeInvitationSender struct {
+	recipients []string
+}
+
+func (f *fakeInvitationSender) SendGroupInvitations(
+	_ context.Context,
+	recipients []string,
+	_ group.Group,
+) error {
+	for _, recipient := range recipients {
+		f.recipients = append(f.recipients, strings.Clone(recipient))
+	}
+	return nil
+}
+
 func (f *fakeCounts) GetCount(_ context.Context, groupID, authUserID string) (int, error) {
 	return f.rows[groupID][authUserID], nil
 }
@@ -192,6 +207,7 @@ func groupRequest(t *testing.T, app *fiber.App, method, target, user, body strin
 
 func TestGroupRoutesServeMembers(t *testing.T) {
 	app := fiber.New()
+	invitations := &fakeInvitationSender{}
 	service := groupservice.NewService(
 		&fakeGroups{
 			groups:  map[string]group.Group{},
@@ -199,6 +215,7 @@ func TestGroupRoutesServeMembers(t *testing.T) {
 			byCode:  map[string]string{},
 		},
 		&fakeCounts{rows: map[string]map[string]int{}},
+		invitations,
 	)
 	httpv1.Register(app.Group("/api"), httpv1.Dependencies{
 		Groups: grouphandler.New(service),
@@ -207,6 +224,9 @@ func TestGroupRoutesServeMembers(t *testing.T) {
 
 	if status, _ := groupRequest(t, app, "GET", "/api/v1/groups", "", ""); status != fiber.StatusUnauthorized {
 		t.Fatalf("status = %d, want %d", status, fiber.StatusUnauthorized)
+	}
+	if status, _ := groupRequest(t, app, "POST", "/api/v1/groups/group-1/invitations", "", `{"emails":["a@example.com"]}`); status != fiber.StatusUnauthorized {
+		t.Fatalf("invitation status = %d, want %d", status, fiber.StatusUnauthorized)
 	}
 
 	status, body := groupRequest(t, app, "POST", "/api/v1/groups", "user-1", `{"name":"Crew","phrase":"karimla"}`)
@@ -256,6 +276,20 @@ func TestGroupRoutesServeMembers(t *testing.T) {
 		len(listed.Data[0].Members) != 2 || listed.Data[0].Members[0].UserID != "user-1" ||
 		!listed.Data[0].Members[0].You {
 		t.Fatalf("group list = %+v, want two previews out of three members with caller first", listed.Data)
+	}
+
+	invitationTarget := "/api/v1/groups/" + created.Data.ID + "/invitations"
+	status, invitationBody := groupRequest(t, app, "POST", invitationTarget, "user-1", `{"emails":["one@example.com","two@example.com"]}`)
+	var sent struct {
+		Data struct {
+			SentCount int `json:"sent_count"`
+		} `json:"data"`
+	}
+	if status != fiber.StatusOK || json.Unmarshal([]byte(invitationBody), &sent) != nil || sent.Data.SentCount != 2 {
+		t.Fatalf("status = %d, body = %s, want two invitations sent", status, invitationBody)
+	}
+	if len(invitations.recipients) != 2 || invitations.recipients[0] != "one@example.com" || invitations.recipients[1] != "two@example.com" {
+		t.Fatalf("recipients = %v, want both requested emails", invitations.recipients)
 	}
 
 	incrementTarget := "/api/v1/groups/" + created.Data.ID + "/members/user-2/increment"

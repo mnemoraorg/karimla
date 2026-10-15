@@ -4,8 +4,15 @@ const originalApiUrl = process.env.NEXT_PUBLIC_API_URL
 const originalFetch = globalThis.fetch
 process.env.NEXT_PUBLIC_API_URL = "https://api.example/"
 
-const { listGroups, createGroup, joinGroup, getGroup, incrementMember, decrementMember } =
-  await import("../../../api/groups.ts")
+const {
+  listGroups,
+  createGroup,
+  joinGroup,
+  getGroup,
+  sendGroupInvitations,
+  incrementMember,
+  decrementMember,
+} = await import("../../../api/groups.ts")
 
 afterEach(() => {
   globalThis.fetch = originalFetch
@@ -88,6 +95,37 @@ describe("joinGroup", () => {
       })
 
     await expect(joinGroup("ZZZZ9999")).rejects.toThrow("Not found")
+  })
+})
+
+describe("group invitations", () => {
+  it("posts all recipient emails with credentials", async () => {
+    let request
+    globalThis.fetch = async (url, init) => {
+      request = { url: String(url), init }
+      return envelope({ sent_count: 2 })
+    }
+
+    await expect(sendGroupInvitations("g1", ["one@example.com", "two@example.com"])).resolves.toBe(
+      2,
+    )
+    expect(request.url).toBe("https://api.example/api/v1/groups/g1/invitations")
+    expect(request.init.method).toBe("POST")
+    expect(request.init.credentials).toBe("include")
+    expect(JSON.parse(request.init.body)).toEqual({
+      emails: ["one@example.com", "two@example.com"],
+    })
+  })
+
+  it("rejects an empty or oversized recipient list without a request", async () => {
+    globalThis.fetch = async () => {
+      throw new Error("fetch should not run")
+    }
+
+    await expect(sendGroupInvitations("g1", [])).rejects.toThrow("Enter up to 10 email addresses")
+    await expect(sendGroupInvitations("g1", Array(11).fill("person@example.com"))).rejects.toThrow(
+      "Enter up to 10 email addresses",
+    )
   })
 })
 

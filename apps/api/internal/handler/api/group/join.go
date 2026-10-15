@@ -2,8 +2,8 @@ package group
 
 import (
 	"github.com/gofiber/fiber/v2"
-	authmiddleware "github.com/mnemoraorg/yappi/apps/api/internal/middleware/auth"
 	domaingroup "github.com/mnemoraorg/yappi/apps/api/internal/domain/group"
+	authmiddleware "github.com/mnemoraorg/yappi/apps/api/internal/middleware/auth"
 	"github.com/mnemoraorg/yappi/apps/api/internal/shared/response"
 )
 

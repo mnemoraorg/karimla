@@ -7,12 +7,17 @@ import (
 )
 
 type Service struct {
-	groups group.Repository
-	counts group.CountRepository
+	groups           group.Repository
+	counts           group.CountRepository
+	invitationSender group.InvitationSender
 }
 
-func NewService(groups group.Repository, counts group.CountRepository) *Service {
-	return &Service{groups: groups, counts: counts}
+func NewService(
+	groups group.Repository,
+	counts group.CountRepository,
+	invitationSender group.InvitationSender,
+) *Service {
+	return &Service{groups: groups, counts: counts, invitationSender: invitationSender}
 }
 
 func (s *Service) checkMemberPair(

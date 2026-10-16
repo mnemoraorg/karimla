@@ -1,12 +1,9 @@
 import { z } from "zod"
 
-const apiV1Url = z
-  .string()
-  .url()
-  .refine((value) => {
-    const url = new URL(value)
-    return url.pathname.replace(/\/+$/, "") === "/api/v1" && !url.search && !url.hash
-  }, "URL must end with /api/v1")
+const apiV1Url = z.url().refine((value) => {
+  const url = new URL(value)
+  return url.pathname.replace(/\/+$/, "") === "/api/v1" && !url.search && !url.hash
+}, "URL must end with /api/v1")
 
 export const envSchema = z.object({
   NEXT_PUBLIC_ENVIRONMENT: z.string().trim().min(1),

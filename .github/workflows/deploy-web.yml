@@ -1,0 +1,70 @@
+name: Deploy Web to Cloudflare
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/web/**"
+      - "packages/**"
+      - "package.json"
+      - "bun.lock"
+      - "turbo.json"
+      - ".github/workflows/deploy-web.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      NEXT_PUBLIC_ENVIRONMENT: ${{ vars.NEXT_PUBLIC_ENVIRONMENT }}
+      NEXT_PUBLIC_DEBUG: ${{ vars.NEXT_PUBLIC_DEBUG }}
+      NEXT_PUBLIC_API_URL_V1: ${{ vars.NEXT_PUBLIC_API_URL_V1 }}
+      NEXT_PUBLIC_AUTH_URL_V1: ${{ vars.NEXT_PUBLIC_AUTH_URL_V1 }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate production Web configuration
+        # The web env is inlined at build time, so the deploy must fail loudly
+        # instead of shipping a bundle with missing or development values.
+        run: |
+          set -eu
+          for variable in \
+            NEXT_PUBLIC_ENVIRONMENT \
+            NEXT_PUBLIC_DEBUG \
+            NEXT_PUBLIC_API_URL_V1 \
+            NEXT_PUBLIC_AUTH_URL_V1; do
+            value="${!variable:-}"
+            if [ -z "$value" ] || [ "$value" = "-" ]; then
+              echo "::error::Missing GitHub production variable: $variable"
+              exit 1
+            fi
+          done
+          if [ "$NEXT_PUBLIC_ENVIRONMENT" != "production" ]; then
+            echo "::error::NEXT_PUBLIC_ENVIRONMENT must be production"
+            exit 1
+          fi
+          if [ "$NEXT_PUBLIC_DEBUG" != "false" ]; then
+            echo "::error::NEXT_PUBLIC_DEBUG must be false"
+            exit 1
+          fi
+
+      - name: Build and deploy to Cloudflare
+        run: bun x turbo run deploy:cloudflare --filter=web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

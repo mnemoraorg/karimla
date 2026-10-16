@@ -77,11 +77,27 @@ export async function sendGroupInvitations(groupId: string, emails: string[]): P
   return response.sent_count
 }
 
-export async function incrementMember(groupId: string, userId: string): Promise<number> {
+export type CountRequestOptions = {
+  /**
+   * One key per tap so a retried request replays instead of counting again.
+   * Defaults to a fresh UUID; the sync engine passes the queued op id so its
+   * retries share one key.
+   */
+  idempotencyKey?: string
+}
+
+export async function incrementMember(
+  groupId: string,
+  userId: string,
+  options: CountRequestOptions = {},
+): Promise<number> {
   try {
     const response = await apiRequest<{ count: number }>(
       `/groups/${groupId}/members/${userId}/increment`,
-      { headers: { "Idempotency-Key": randomOperationKey() }, method: "POST" },
+      {
+        headers: { "Idempotency-Key": options.idempotencyKey ?? randomOperationKey() },
+        method: "POST",
+      },
     )
     return response.count
   } catch (error) {
@@ -89,11 +105,18 @@ export async function incrementMember(groupId: string, userId: string): Promise<
   }
 }
 
-export async function decrementMember(groupId: string, userId: string): Promise<number> {
+export async function decrementMember(
+  groupId: string,
+  userId: string,
+  options: CountRequestOptions = {},
+): Promise<number> {
   try {
     const response = await apiRequest<{ count: number }>(
       `/groups/${groupId}/members/${userId}/decrement`,
-      { headers: { "Idempotency-Key": randomOperationKey() }, method: "POST" },
+      {
+        headers: { "Idempotency-Key": options.idempotencyKey ?? randomOperationKey() },
+        method: "POST",
+      },
     )
     return response.count
   } catch (error) {

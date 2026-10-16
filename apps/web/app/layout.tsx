@@ -6,6 +6,8 @@ import type { Metadata } from "next"
 
 import { QueryProvider } from "@/providers/query-provider"
 
+import { CountSyncEngine } from "@/components/shared/_sync/count-sync-engine"
+import { ConnectivityToasts } from "@/components/shared/_sync/connectivity-toasts"
 import { createMetadata } from "@packages/metadata"
 import { ThemeProvider } from "@packages/ui-w/providers/theme-provider"
 import { ToastProvider } from "@packages/ui-w/providers/toast-provider"
@@ -25,6 +27,8 @@ export default function RootLayout({
           <ToastProvider position="bottom-left">
             <TooltipProvider delay={0}>
               <QueryProvider>
+                <CountSyncEngine />
+                <ConnectivityToasts />
                 <main className="relative min-h-svh w-full overflow-x-hidden">{children}</main>
               </QueryProvider>
             </TooltipProvider>

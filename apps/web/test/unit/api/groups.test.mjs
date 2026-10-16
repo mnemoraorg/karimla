@@ -166,6 +166,19 @@ describe("member counting", () => {
     expect(new Set(seen).size).toBe(2)
   })
 
+  it("reuses the queued operation key across retries", async () => {
+    const seen = []
+    globalThis.fetch = async (_url, init) => {
+      seen.push(new Headers(init?.headers).get("idempotency-key"))
+      return envelope({ count: 1 })
+    }
+
+    await incrementMember("g1", "u1", { idempotencyKey: "op-1" })
+    await decrementMember("g1", "u1", { idempotencyKey: "op-1" })
+
+    expect(seen).toEqual(["op-1", "op-1"])
+  })
+
   it("reads group detail", async () => {
     globalThis.fetch = async () =>
       envelope({ group: { id: "g1" }, members: [{ user_id: "u1", count: 3, you: true }] })

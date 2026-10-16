@@ -149,6 +149,23 @@ describe("member counting", () => {
     }
   })
 
+  it("stamps each count with a unique operation key", async () => {
+    const seen = []
+    globalThis.fetch = async (_url, init) => {
+      seen.push(new Headers(init?.headers).get("idempotency-key"))
+      return envelope({ count: 1 })
+    }
+
+    await incrementMember("g1", "u1")
+    await decrementMember("g1", "u1")
+
+    expect(seen).toHaveLength(2)
+    for (const key of seen) {
+      expect(key).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
+    }
+    expect(new Set(seen).size).toBe(2)
+  })
+
   it("reads group detail", async () => {
     globalThis.fetch = async () =>
       envelope({ group: { id: "g1" }, members: [{ user_id: "u1", count: 3, you: true }] })

@@ -12,6 +12,14 @@ export class ApiError extends Error {
   }
 }
 
+/** The browser could not reach the API at all: offline, DNS failure, or timeout. */
+export class ApiUnavailableError extends Error {
+  constructor() {
+    super("The API is unavailable. Try again shortly.")
+    this.name = "ApiUnavailableError"
+  }
+}
+
 type ApiEnvelope<T> = {
   success: boolean
   message: string
@@ -36,7 +44,7 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
       signal: init.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     })
   } catch {
-    throw new Error("The API is unavailable. Try again shortly.")
+    throw new ApiUnavailableError()
   }
 
   const envelope = (await response.json().catch(() => null)) as ApiEnvelope<T> | null

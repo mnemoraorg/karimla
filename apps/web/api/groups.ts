@@ -1,4 +1,4 @@
-import { apiRequest } from "./client"
+import { ApiError, apiRequest, ApiUnavailableError } from "./client"
 
 export type Group = {
   id: string
@@ -78,17 +78,41 @@ export async function sendGroupInvitations(groupId: string, emails: string[]): P
 }
 
 export async function incrementMember(groupId: string, userId: string): Promise<number> {
-  const response = await apiRequest<{ count: number }>(
-    `/groups/${groupId}/members/${userId}/increment`,
-    { method: "POST" },
-  )
-  return response.count
+  try {
+    const response = await apiRequest<{ count: number }>(
+      `/groups/${groupId}/members/${userId}/increment`,
+      { method: "POST" },
+    )
+    return response.count
+  } catch (error) {
+    throw new Error(countErrorMessage(error))
+  }
 }
 
 export async function decrementMember(groupId: string, userId: string): Promise<number> {
-  const response = await apiRequest<{ count: number }>(
-    `/groups/${groupId}/members/${userId}/decrement`,
-    { method: "POST" },
-  )
-  return response.count
+  try {
+    const response = await apiRequest<{ count: number }>(
+      `/groups/${groupId}/members/${userId}/decrement`,
+      { method: "POST" },
+    )
+    return response.count
+  } catch (error) {
+    throw new Error(countErrorMessage(error))
+  }
+}
+
+/**
+ * Says what a failed tap means. Anything the service judged (validation and
+ * other 4xx answers) keeps its own message; only transport failures get
+ * rewritten into something the counter can act on.
+ */
+function countErrorMessage(error: unknown): string {
+  if (error instanceof ApiUnavailableError) {
+    return "Couldn't reach the counter. Check your connection and try again."
+  }
+  if (error instanceof ApiError && error.status >= 500) {
+    return "The counter service is having trouble. Try again in a moment."
+  }
+  if (error instanceof Error) return error.message
+  return "The count could not be saved."
 }

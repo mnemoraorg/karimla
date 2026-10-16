@@ -41,7 +41,7 @@ List only concrete files an agent should inspect before changing the feature. Do
 ```text
 apps/api/
 ├── internal/delivery/http/v1/<feature>/
-├── internal/handler/<feature>/
+├── internal/handler/v1/<feature>/
 ├── internal/domain/<feature>/
 ├── ent/schema/
 └── test/

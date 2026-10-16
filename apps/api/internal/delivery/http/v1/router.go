@@ -2,8 +2,8 @@ package v1
 
 import (
 	"github.com/gofiber/fiber/v2"
-	grouphandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/group"
-	healthhandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/health"
+	grouphandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/v1/group"
+	healthhandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/v1/health"
 	authmiddleware "github.com/mnemoraorg/yappi/apps/api/internal/middleware/auth"
 )
 

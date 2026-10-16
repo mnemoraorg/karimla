@@ -14,7 +14,7 @@ import (
 	httpv1 "github.com/mnemoraorg/yappi/apps/api/internal/delivery/http/v1"
 	"github.com/mnemoraorg/yappi/apps/api/internal/domain/group"
 	groupservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/group/service"
-	grouphandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/group"
+	grouphandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/v1/group"
 	"github.com/mnemoraorg/yappi/apps/api/internal/shared"
 )
 

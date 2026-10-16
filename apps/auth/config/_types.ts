@@ -6,6 +6,7 @@ export interface AppConfig {
 }
 
 export interface AuthConfig {
+  cookieDomain: string | undefined
   secret: string
   url: string
 }

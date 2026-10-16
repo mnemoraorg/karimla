@@ -17,6 +17,14 @@ export const auth = betterAuth({
   basePath: "/api/v1/auth",
   secret: config.auth.secret,
   trustedOrigins: config.cors.allowedOrigins,
+  advanced: config.auth.cookieDomain
+    ? {
+        crossSubDomainCookies: {
+          enabled: true,
+          domain: config.auth.cookieDomain,
+        },
+      }
+    : undefined,
   database: { db: authDatabase, type: "postgres", schemaName: "auth" },
   user: {
     fields: {

@@ -33,6 +33,7 @@ export function createApp(authHandler: AuthHandler, corsConfig: CorsConfig): Hon
       allowHeaders: corsConfig.allowedHeaders,
       allowMethods: corsConfig.allowedMethods,
       credentials: true,
+      exposeHeaders: corsConfig.exposeHeaders,
       origin: (origin) => (allowedOrigins.has(origin) ? origin : null),
     }),
   )

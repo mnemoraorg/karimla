@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	"strings"
 	"time"
@@ -24,12 +25,14 @@ import (
 	domaingroup "github.com/mnemoraorg/yappi/apps/api/internal/domain/group"
 	groupservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/group/service"
 	grouphandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/v1/group"
+	"github.com/mnemoraorg/yappi/apps/api/internal/middleware/idempotency"
 )
 
 type Application struct {
-	http    *fiber.App
-	address string
-	db      *sql.DB
+	http        *fiber.App
+	address     string
+	db          *sql.DB
+	idempotency idempotency.Store
 }
 
 func New(cfg config.Config) (*Application, error) {
@@ -71,13 +74,20 @@ func New(cfg config.Config) (*Application, error) {
 			)
 		}
 		groupService := groupservice.NewService(store.Groups(), store.GroupCounts(), invitationSender)
+		idempotencyKeys := store.IdempotencyKeys()
 		dependencies = v1.Dependencies{
-			Groups: grouphandler.New(groupService),
-			Auth:   sessionClient,
+			Groups:      grouphandler.New(groupService),
+			Auth:        sessionClient,
+			Idempotency: idempotencyKeys,
 		}
 	}
 	deliveryhttp.Register(server, dependencies)
-	return &Application{http: server, address: fmt.Sprintf(":%d", cfg.Port), db: db}, nil
+	return &Application{
+		http:        server,
+		address:     fmt.Sprintf(":%d", cfg.Port),
+		db:          db,
+		idempotency: dependencies.Idempotency,
+	}, nil
 }
 
 func (a *Application) Run(ctx context.Context) error {
@@ -96,6 +106,7 @@ func (a *Application) Run(ctx context.Context) error {
 	go func() {
 		errCh <- a.http.Listener(listener)
 	}()
+	go a.purgeIdempotencyKeys(ctx)
 
 	select {
 	case err := <-errCh:
@@ -106,5 +117,26 @@ func (a *Application) Run(ctx context.Context) error {
 			return shutdownErr
 		}
 		return nil
+	}
+}
+
+// purgeIdempotencyKeys drops expired operation keys so the table holds roughly
+// the retention window. A failed purge only delays cleanup; expiry is also
+// enforced on read, so tap correctness never depends on this loop.
+func (a *Application) purgeIdempotencyKeys(ctx context.Context) {
+	if a.idempotency == nil {
+		return
+	}
+	ticker := time.NewTicker(time.Hour)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			if _, err := a.idempotency.PurgeExpired(ctx); err != nil {
+				log.Printf("purge idempotency keys: %v", err)
+			}
+		}
 	}
 }

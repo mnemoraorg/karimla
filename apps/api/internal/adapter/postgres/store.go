@@ -8,6 +8,7 @@ import (
 	entclient "github.com/mnemoraorg/yappi/apps/api/ent"
 	"github.com/mnemoraorg/yappi/apps/api/internal/adapter/postgres/repository"
 	"github.com/mnemoraorg/yappi/apps/api/internal/domain/group"
+	"github.com/mnemoraorg/yappi/apps/api/internal/middleware/idempotency"
 )
 
 type Store struct {
@@ -24,4 +25,8 @@ func (s *Store) Groups() group.Repository {
 
 func (s *Store) GroupCounts() group.CountRepository {
 	return repository.NewCount(s.ent)
+}
+
+func (s *Store) IdempotencyKeys() idempotency.Store {
+	return repository.NewIdempotency(s.ent)
 }

@@ -158,4 +158,35 @@ describe("member counting", () => {
       members: [{ user_id: "u1", count: 3, you: true }],
     })
   })
+
+  it("maps transport failures to actionable copy and keeps server messages", async () => {
+    globalThis.fetch = async () => {
+      throw new TypeError("fetch failed")
+    }
+
+    await expect(incrementMember("g1", "u1")).rejects.toThrow(
+      "Couldn't reach the counter. Check your connection and try again.",
+    )
+
+    globalThis.fetch = async () =>
+      new Response(
+        JSON.stringify({
+          success: false,
+          message: "Authentication service temporarily unavailable",
+          data: null,
+        }),
+        { status: 503 },
+      )
+
+    await expect(decrementMember("g1", "u1")).rejects.toThrow(
+      "The counter service is having trouble. Try again in a moment.",
+    )
+
+    globalThis.fetch = async () =>
+      new Response(JSON.stringify({ success: false, message: "Could not count", data: null }), {
+        status: 400,
+      })
+
+    await expect(incrementMember("g1", "u1")).rejects.toThrow("Could not count")
+  })
 })

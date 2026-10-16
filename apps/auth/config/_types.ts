@@ -27,3 +27,15 @@ export interface EmailConfig {
   apiToken: string
   from: string
 }
+
+export interface RateLimitRule {
+  max: number
+  window: number
+}
+
+export interface RateLimitConfig {
+  /** Path-keyed overrides, relative to the BetterAuth base path. */
+  customRules: Record<string, RateLimitRule>
+  /** The rule the `emailOTP` plugin applies to every path it owns. */
+  emailOtpSend: RateLimitRule
+}

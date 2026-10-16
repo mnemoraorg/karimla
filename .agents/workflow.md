@@ -44,10 +44,23 @@ Use Conventional Commits (`type(scope): subject`) everywhere a message is record
 
 - Local commits follow the convention.
 - PR titles follow the convention too, as the human-facing summary of the commits being merged.
-- When merging, pass an explicit conventional subject for the merge commit instead of accepting GitHub defaults. Never land a bare `Merge pull request #N from ...` message:
+- When merging, pass an explicit conventional subject **and** body instead of accepting GitHub defaults. Never land a bare `Merge pull request #N from ...` subject, and never accept GitHub's auto-generated body, which is only a flat list of the included commit subjects:
 
 ```sh
-gh pr merge <number> --merge -t "feat(auth): sign in with a 6-digit email OTP code"
+gh pr merge <number> --merge \
+  -t "feat(auth): sign in with a 6-digit email OTP code" \
+  -b "Adds invite-only sign-in: BetterAuth issues a 6-digit code, resends are
+cooled down for 60 seconds, and the session gate covers the protected routes.
+
+Lands #24, #25."
 ```
 
 - Never rewrite published history to repair a message; fix the process going forward.
+
+### Write substance, not labels
+
+Every message must summarize the change it records, and merge or promotion commits matter most because they stand in for everything they bring in.
+
+- State what now works, what moved or was removed, and why, grouped by impact rather than walked commit by commit.
+- A label-only subject such as `chore: promote development to main` does not meet this bar: it names the mechanism instead of the work. Promotion and release merges are held to the same standard as any other commit.
+- Do not paste the included commit subjects as the body. Reference the issues and describe the outcomes they delivered.

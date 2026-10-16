@@ -14,7 +14,7 @@ import { SpinnerFlicker01 } from "@packages/ui-w/shared/spinner-variant/spinner-
 import { GroupMemberCountCard } from "@/components/pages/groups/id/_card/group-member-count-card"
 import { ShareInviteCodeButton } from "@/components/pages/groups/id/_button/share-invite-code-button"
 import { GroupEmailInviteDrawer } from "@/components/pages/groups/id/_drawer/group-email-invite-drawer"
-import { SyncStatus } from "@/components/pages/groups/id/_status/sync-status"
+import { SyncStatus } from "@/components/shared/_sync/sync-status"
 import { PageHeader } from "@/components/shared/_header/page-header"
 
 export default function Page(): React.ReactElement {
@@ -35,7 +35,7 @@ export default function Page(): React.ReactElement {
     )
   }
 
-  if (group.error || !group.data) {
+  if (!group.data) {
     return (
       <div className="flex flex-col items-center gap-4 text-center">
         <p className="text-destructive text-center text-sm" role="alert">
@@ -82,7 +82,7 @@ export default function Page(): React.ReactElement {
           {totalCount}
         </p>
         <p className="text-muted-foreground text-sm">Count every “{groupData.group.phrase}”</p>
-        <SyncStatus />
+        <SyncStatus stale={group.error !== null} />
       </div>
       <ul className="mt-8 flex flex-col gap-4">
         {members.map((member) => {

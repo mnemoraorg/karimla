@@ -74,7 +74,7 @@ func Load() (Config, error) {
 		CORS: CORSConfig{
 			AllowedOrigins:   list(value("CORS_ALLOWED_ORIGINS", "http://localhost:35000")),
 			AllowedMethods:   list(value("CORS_ALLOWED_METHODS", "GET,POST,PUT,DELETE,PATCH,OPTIONS")),
-			AllowedHeaders:   list(value("CORS_ALLOWED_HEADERS", "Authorization,Content-Type")),
+			AllowedHeaders:   list(value("CORS_ALLOWED_HEADERS", "Authorization,Content-Type,Idempotency-Key")),
 			ExposedHeaders:   list(value("CORS_EXPOSE_HEADERS", "Content-Length,Content-Range")),
 			AllowCredentials: boolean("CORS_ALLOW_CREDENTIALS", false),
 		},

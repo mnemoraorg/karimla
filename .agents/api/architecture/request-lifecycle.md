@@ -1,7 +1,7 @@
 # Request lifecycle
 
 ```text
-Request → Fiber middleware (logger, CORS) → route middleware (auth, limits)
+Request → Fiber middleware (logger, CORS) → route middleware (auth, idempotency)
   → handler (parse) → domain service (decide) → repository port
   → adapter (Ent/PostgreSQL or external call) → handler (map) → envelope JSON
 ```

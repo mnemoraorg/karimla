@@ -153,6 +153,10 @@ func (f *fakeCounts) ListCounts(_ context.Context, groupID string) (map[string]i
 }
 
 func (f *fakeCounts) Increment(_ context.Context, groupID, authUserID string) (int, error) {
+	// Clone retained keys: Fiber may hand out route values that alias
+	// recycled request buffers, so a stored key must own its bytes.
+	groupID = strings.Clone(groupID)
+	authUserID = strings.Clone(authUserID)
 	if f.rows[groupID] == nil {
 		f.rows[groupID] = map[string]int{}
 	}
@@ -161,6 +165,8 @@ func (f *fakeCounts) Increment(_ context.Context, groupID, authUserID string) (i
 }
 
 func (f *fakeCounts) Decrement(_ context.Context, groupID, authUserID string) (int, error) {
+	groupID = strings.Clone(groupID)
+	authUserID = strings.Clone(authUserID)
 	if f.rows[groupID][authUserID] > 0 {
 		f.rows[groupID][authUserID] = f.rows[groupID][authUserID] - 1
 	}

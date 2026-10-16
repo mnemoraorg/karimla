@@ -81,7 +81,7 @@ export async function incrementMember(groupId: string, userId: string): Promise<
   try {
     const response = await apiRequest<{ count: number }>(
       `/groups/${groupId}/members/${userId}/increment`,
-      { method: "POST" },
+      { headers: { "Idempotency-Key": randomOperationKey() }, method: "POST" },
     )
     return response.count
   } catch (error) {
@@ -93,12 +93,21 @@ export async function decrementMember(groupId: string, userId: string): Promise<
   try {
     const response = await apiRequest<{ count: number }>(
       `/groups/${groupId}/members/${userId}/decrement`,
-      { method: "POST" },
+      { headers: { "Idempotency-Key": randomOperationKey() }, method: "POST" },
     )
     return response.count
   } catch (error) {
     throw new Error(countErrorMessage(error))
   }
+}
+
+/**
+ * One UUID per tap. The service replays a repeated key instead of counting
+ * again, so a retried request is safe. Needs a secure context (https or
+ * localhost), which is every context this app runs in.
+ */
+function randomOperationKey(): string {
+  return crypto.randomUUID()
 }
 
 /**

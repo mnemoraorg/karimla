@@ -9,7 +9,7 @@ components/ → hooks/api/ (React Query) → api/ (fetch) → auth service or Go
 - `api/auth/client.ts` owns the auth base URL, credentialed requests, and the 10s timeout. `authRequest` throws a typed `Error`; it never returns response envelopes.
 - `api/auth/send-otp.ts` and `api/auth/sign-in.ts` own one endpoint each: normalize input, post JSON, and map non-OK responses to form-ready messages (rate limits get their own message).
 - `hooks/api/auth/` wraps each request function in one `useMutation` with no retry. Hooks own no URLs, no fetch, and no message copy beyond what the API module throws.
-- Count mutations apply optimistically: `onMutate` cancels the group query, snapshots it, and sets the adjusted count from `lib/group-counts.ts`; `onError` restores the snapshot; `onSettled` invalidates so success and failure both resync from the server. Count failures are mapped to actionable copy in `api/groups.ts` (unreachable service, 5xx); anything the service judged keeps its own message.
+- Count mutations apply optimistically: `onMutate` cancels the group query, snapshots it, and sets the adjusted count from `lib/group-counts.ts`; `onError` restores the snapshot; `onSettled` invalidates so success and failure both resync from the server. Count requests stamp one `Idempotency-Key` UUID per tap so a retried request replays instead of counting again. Count failures are mapped to actionable copy in `api/groups.ts` (unreachable service, 5xx); anything the service judged keeps its own message.
 - Components call hooks, read `isPending` for button state, and render `error.message`. No component imports from `api/` or calls `fetch`.
 
 ## Client state

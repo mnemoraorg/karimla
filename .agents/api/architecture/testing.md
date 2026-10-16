@@ -15,4 +15,6 @@ make test
 make lint
 ```
 
+Fiber serves `app.Test` requests on background goroutines with pooled request contexts, so strings read from a request (cookies, params, bodies) may alias recycled buffers. Test fakes must `strings.Clone` anything they retain past the request; production code is safe as long as values are consumed synchronously (e.g. straight into SQL binds).
+
 `make test` runs unit tests only. Never require developer-local services or credentials in unit tests; never send real OTPs or emails in tests.

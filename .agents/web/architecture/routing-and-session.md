@@ -3,7 +3,9 @@
 ## Route groups
 
 - `app/(auth)/login` is the public sign-in page. It is an async Server Component: when `getYappiSession()` finds a session it calls `redirect("/")`, so logged-in users never see the form.
-- `app/(protected)/page.tsx` is the counter page. It calls `requireYappiSession()` before rendering, so logged-out visitors are redirected to `/login`.
+- `app/(protected)/layout.tsx` requires the session once for the whole protected area (`requireYappiSession()`), so logged-out visitors are redirected to `/login`, and renders the shared `UserSheet` above every protected page.
+- `app/(protected)/page.tsx` is the groups home: it lists the caller's groups and links to create and join flows.
+- `app/(protected)/groups/new` and `app/(protected)/groups/join` host the create and join forms; `app/(protected)/groups/[id]` hosts the group detail (phrase, own count, member leaderboard with per-row counting).
 - The root `app/layout.tsx` provides theme, toast, tooltip, and React Query providers. It owns no auth decisions.
 
 ## Session source

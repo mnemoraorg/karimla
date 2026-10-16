@@ -13,8 +13,8 @@ import {
 } from "@/lib/login"
 
 import { Button } from "@packages/ui-w/shared/button/button"
-import { LoginField } from "@/components/pages/login/_fields/login-field"
-import { OtpField } from "@/components/pages/login/_fields/otp-field"
+import { LoginField } from "@/components/pages/login/_field/login-field"
+import { OtpField } from "@/components/pages/login/_field/otp-field"
 
 type LoginStep = "email" | "code"
 

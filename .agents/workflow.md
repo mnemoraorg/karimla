@@ -31,7 +31,7 @@ When the user explicitly requests GitHub delivery, use the retained-work loop:
 3. **Implement** — inspect instructions, make the smallest complete change, and run relevant checks.
 4. **Pull request** — push the feature branch and open a PR linked to the issue. Never push directly to `origin/development`.
 5. **CI** — wait for required checks to pass; fix failures on the same branch. Do not merge red CI.
-6. **Merge** — squash-merge one approved PR into `development`.
+6. **Merge** — merge one approved PR into `development` with a merge commit, keeping every commit on the branch instead of squashing.
 7. **Close** — close the linked issue after merge and verification.
 8. **Clean up** — delete the remote and local feature branch.
 9. **Sync** — fetch/prune and fast-forward local `development`; verify the final state.
@@ -43,11 +43,11 @@ If a required remote issue, review, CI check, or merge step is blocked, report i
 Use Conventional Commits (`type(scope): subject`) everywhere a message is recorded, including GitHub-generated ones:
 
 - Local commits follow the convention.
-- PR titles follow the convention too: squash-merge copies the PR title verbatim as the commit message.
-- When merging, pass an explicit conventional subject instead of accepting GitHub defaults. Never land a bare `Merge pull request #N from ...` message:
+- PR titles follow the convention too, as the human-facing summary of the commits being merged.
+- When merging, pass an explicit conventional subject for the merge commit instead of accepting GitHub defaults. Never land a bare `Merge pull request #N from ...` message:
 
 ```sh
-gh pr merge <number> --squash -t "feat(auth): sign in with a 6-digit email OTP code"
+gh pr merge <number> --merge -t "feat(auth): sign in with a 6-digit email OTP code"
 ```
 
 - Never rewrite published history to repair a message; fix the process going forward.

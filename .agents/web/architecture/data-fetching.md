@@ -19,5 +19,5 @@ components/ → hooks/api/ (React Query) → api/ (fetch) → auth service or Go
 
 ## Configuration
 
-- The auth base URL comes from `NEXT_PUBLIC_AUTH_URL`, falling back to `http://localhost:35081` in development and throwing a typed error when unset elsewhere.
-- Document the contract in `apps/web/.env.example`; deployment must set the variable at build time.
+- The auth and API base URLs come from required `NEXT_PUBLIC_*_URL_V1` variables validated by `apps/web/lib/env.ts`; each includes the `/api/v1` prefix.
+- Document the contract in `apps/web/.env.example`; deployment must set all four variables at build time.

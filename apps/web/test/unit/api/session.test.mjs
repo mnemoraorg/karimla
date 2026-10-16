@@ -1,16 +1,17 @@
 import { afterEach, describe, expect, it } from "bun:test"
 
-const originalApiUrl = process.env.NEXT_PUBLIC_AUTH_URL
+import { setTestEnv } from "../env-test-setup.mjs"
+
+const restoreEnv = setTestEnv()
 const originalFetch = globalThis.fetch
-process.env.NEXT_PUBLIC_AUTH_URL = "https://auth.example/"
 
 const { getSession } = await import("../../../api/auth/session.ts")
 const { signOut } = await import("../../../api/auth/sign-out.ts")
+const { updateUserName } = await import("../../../api/auth/update-user.ts")
 
 afterEach(() => {
   globalThis.fetch = originalFetch
-  if (originalApiUrl === undefined) delete process.env.NEXT_PUBLIC_AUTH_URL
-  else process.env.NEXT_PUBLIC_AUTH_URL = originalApiUrl
+  restoreEnv()
 })
 
 describe("getSession", () => {
@@ -32,6 +33,30 @@ describe("getSession", () => {
     globalThis.fetch = async () => new Response(null, { status: 401 })
 
     await expect(getSession()).resolves.toBeNull()
+  })
+})
+
+describe("updateUserName", () => {
+  it("trims and posts the full name with credentials", async () => {
+    let request
+    globalThis.fetch = async (url, init) => {
+      request = { url: String(url), init }
+      return new Response(null, { status: 200 })
+    }
+
+    await updateUserName("  First Last  ")
+    expect(request.url).toBe("https://auth.example/api/v1/auth/update-user")
+    expect(request.init.method).toBe("POST")
+    expect(request.init.credentials).toBe("include")
+    expect(JSON.parse(request.init.body)).toEqual({ name: "First Last" })
+  })
+
+  it("rejects a blank name without making a request", async () => {
+    globalThis.fetch = async () => {
+      throw new Error("unexpected request")
+    }
+
+    await expect(updateUserName("  ")).rejects.toThrow("Enter your full name.")
   })
 })
 

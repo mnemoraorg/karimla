@@ -30,13 +30,15 @@ export function UserSheet(): React.ReactElement | null {
 
   return (
     <Sheet>
-      <SheetTrigger
-        render={
-          <Button aria-label="Open account menu" className="fixed top-4 right-4" size="icon">
-            {email?.[0]?.toUpperCase() ?? "?"}
-          </Button>
-        }
-      />
+      <div className="pointer-events-none fixed inset-x-0 top-4 z-50 mx-auto flex w-full max-w-md justify-end px-6">
+        <SheetTrigger
+          render={
+            <Button aria-label="Open account menu" className="pointer-events-auto" size="icon">
+              {email?.[0]?.toUpperCase() ?? "?"}
+            </Button>
+          }
+        />
+      </div>
       <SheetPopup side="right">
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>

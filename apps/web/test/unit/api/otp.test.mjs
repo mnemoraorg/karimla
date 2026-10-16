@@ -1,16 +1,16 @@
 import { afterEach, describe, expect, it } from "bun:test"
 
-const originalAuthUrl = process.env.NEXT_PUBLIC_AUTH_URL
+import { setTestEnv } from "../env-test-setup.mjs"
+
+const restoreEnv = setTestEnv()
 const originalFetch = globalThis.fetch
-process.env.NEXT_PUBLIC_AUTH_URL = "https://auth.example/"
 
 const { sendLoginOtp } = await import("../../../api/auth/send-otp.ts")
 const { signInWithOtp } = await import("../../../api/auth/sign-in.ts")
 
 afterEach(() => {
   globalThis.fetch = originalFetch
-  if (originalAuthUrl === undefined) delete process.env.NEXT_PUBLIC_AUTH_URL
-  else process.env.NEXT_PUBLIC_AUTH_URL = originalAuthUrl
+  restoreEnv()
 })
 
 describe("sendLoginOtp", () => {

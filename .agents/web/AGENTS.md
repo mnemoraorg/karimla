@@ -7,7 +7,7 @@ This document is the active architecture guidance for `apps/web/`. The scoped ru
 `apps/web/` owns routes, presentation, and client session UX. It does not own identity or business data:
 
 - BetterAuth owns identity and session semantics. The web app only reads the session through `get-session` and redirects; it never verifies codes or mints sessions itself.
-- The Go API (port `35080`) owns the counter; it will own friends data next. Do not build browser-storage persistence for data the API owns.
+- The Go API (port `35080`) owns groups, memberships, and counts; it will own friends data next. Do not build browser-storage persistence for data the API owns.
 - No passwords, OTP codes, or session tokens are stored, logged, or decided by web code.
 
 ## Boundary and request flow
@@ -34,7 +34,7 @@ Server components forward request cookies to BetterAuth; client requests use `cr
 
 - HTTP request functions live in `api/`; React Query wrappers live in `hooks/api/`; components call hooks and never call endpoints or `fetch` directly.
 - The shared `QueryClient` disables retries and refetch-on-focus; mutations surface typed errors the form renders.
-- The auth base URL comes from `NEXT_PUBLIC_AUTH_URL` with a development fallback to `http://localhost:35081`.
+- Public configuration comes from the required `NEXT_PUBLIC_*` variables validated in `apps/web/lib/env.ts`; auth and API URLs include `/api/v1`.
 
 ## Testing
 

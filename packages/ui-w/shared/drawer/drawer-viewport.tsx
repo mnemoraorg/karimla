@@ -10,10 +10,12 @@ export function DrawerViewport({
   className,
   position,
   variant = "default",
+  disableSwipe = false,
   ...props
 }: DrawerPrimitive.Viewport.Props & {
   position?: DrawerPosition
   variant?: "default" | "straight" | "inset"
+  disableSwipe?: boolean
 }): React.ReactElement {
   return (
     <DrawerPrimitive.Viewport
@@ -30,6 +32,8 @@ export function DrawerViewport({
         className,
       )}
       data-slot="drawer-viewport"
+      onPointerDownCapture={disableSwipe ? (event) => event.stopPropagation() : undefined}
+      onTouchStartCapture={disableSwipe ? (event) => event.stopPropagation() : undefined}
       {...props}
     />
   )

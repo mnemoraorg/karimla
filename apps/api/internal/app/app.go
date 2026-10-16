@@ -9,17 +9,21 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cloudflare/cloudflare-go/v6"
+	"github.com/cloudflare/cloudflare-go/v6/option"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/mnemoraorg/yappi/apps/api/internal/adapter/betterauth"
+	emailadapter "github.com/mnemoraorg/yappi/apps/api/internal/adapter/email"
 	postgresadapter "github.com/mnemoraorg/yappi/apps/api/internal/adapter/postgres"
 	"github.com/mnemoraorg/yappi/apps/api/internal/config"
 	deliveryhttp "github.com/mnemoraorg/yappi/apps/api/internal/delivery/http"
 	v1 "github.com/mnemoraorg/yappi/apps/api/internal/delivery/http/v1"
-	counterservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/counter/service"
-	counterhandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/counter"
+	domaingroup "github.com/mnemoraorg/yappi/apps/api/internal/domain/group"
+	groupservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/group/service"
+	grouphandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/group"
 )
 
 type Application struct {
@@ -59,9 +63,18 @@ func New(cfg config.Config) (*Application, error) {
 	var dependencies v1.Dependencies
 	if store != nil {
 		sessionClient := betterauth.NewSessionClient(cfg.AuthBaseURL)
-		service := counterservice.NewService(store.Counters())
-		handlers := counterhandler.New(service)
-		dependencies = v1.Dependencies{Handlers: handlers, Auth: sessionClient}
+		var invitationSender domaingroup.InvitationSender
+		if cfg.EmailDelivery.CloudflareAPIToken != "" {
+			cloudflareClient := cloudflare.NewClient(option.WithAPIToken(cfg.EmailDelivery.CloudflareAPIToken))
+			invitationSender = emailadapter.NewCloudflareInvitationSender(
+				cfg.EmailDelivery, cloudflareClient.EmailSending,
+			)
+		}
+		groupService := groupservice.NewService(store.Groups(), store.GroupCounts(), invitationSender)
+		dependencies = v1.Dependencies{
+			Groups: grouphandler.New(groupService),
+			Auth:   sessionClient,
+		}
 	}
 	deliveryhttp.Register(server, dependencies)
 	return &Application{http: server, address: fmt.Sprintf(":%d", cfg.Port), db: db}, nil

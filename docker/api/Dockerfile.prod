@@ -1,0 +1,18 @@
+FROM golang:1.26.3-bookworm AS build
+WORKDIR /build
+
+COPY apps/api/go.mod apps/api/go.sum ./
+RUN go mod download
+
+COPY apps/api ./
+RUN go generate ./ent
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /out/yappi-api ./cmd/api
+
+FROM gcr.io/distroless/static-debian12:nonroot
+WORKDIR /app
+
+COPY --from=build /out/yappi-api /app/yappi-api
+
+USER nonroot:nonroot
+EXPOSE 8080
+ENTRYPOINT ["/app/yappi-api"]

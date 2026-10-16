@@ -81,6 +81,11 @@ func writeServiceError(
 			"Not found", "not_found",
 			"The requested group or member was not found", c, event, authUserID, "warning",
 		))
+	case errors.Is(err, domaingroup.ErrInvitationsUnavailable):
+		return response.JSON(c, fiber.StatusServiceUnavailable, response.FailureWithError[any](
+			"Could not send invitations", "email_unavailable",
+			"Invitations could not be sent. Try again shortly", c, event, authUserID, "error",
+		))
 	default:
 		return response.JSON(c, fiber.StatusInternalServerError, response.FailureWithError[any](
 			message, "group_unavailable", detail, c, event, authUserID, "error",

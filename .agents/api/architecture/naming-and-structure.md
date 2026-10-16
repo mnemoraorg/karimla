@@ -9,7 +9,7 @@ apps/api/
 ├── internal/config/config.go  environment parsing and validation
 ├── internal/delivery/http/route.go        /api group registration
 ├── internal/delivery/http/v1/router.go    /api/v1 routes and middleware wiring
-├── internal/handler/api/<area>/   one file per HTTP operation (counter/get.go, counter/increment.go, health/get.go)
+├── internal/handler/v1/<area>/    one file per HTTP operation (group/create.go, group/join.go, health/get.go)
 ├── internal/domain/<feature>/ models, errors, repository ports, plus service/ (below)
 ├── internal/adapter/<name>/   Ent/PostgreSQL and external-service implementations
 ├── internal/middleware/<name>/ cross-cutting request behavior (auth, limits, IDs)
@@ -18,9 +18,10 @@ apps/api/
 └── test/unit/<mirror>/        tests mirroring internal/ responsibility
 ```
 
-- Feature packages are named after the product capability (`counter`), not the transport (`counterHandler` is wrong; `handler/counter` holding translation is right).
-- `adapter/postgres/store.go` owns the Ent client; per-feature persistence lives under `adapter/postgres/repository/` (e.g. `repository/counter.go`), one file per port implementation.
-- Domain services split one file per operation under `domain/<feature>/service/` (`service.go` holds the type and constructor, e.g. `get_count.go` and `increment.go` hold the operations); the feature root keeps only the model, errors, repository port, and `validator.go` for orchestration-input rules.
+- Feature packages are named after the product capability (`group`), not the transport (`groupHandler` is wrong; `handler/v1/group` holding translation is right).
+- `internal/handler/v1/<area>/` mirrors the versioned delivery layer: the directory carries the version while the package name stays the capability (`group`, `health`). A future version adds a sibling directory instead of renaming handlers.
+- `adapter/postgres/store.go` owns the Ent client; per-feature persistence lives under `adapter/postgres/repository/` (e.g. `repository/group.go`), one file per port implementation.
+- Domain services split one file per operation under `domain/<feature>/service/` (`service.go` holds the type and constructor, e.g. `create_group.go` and `get_group.go` hold the operations); the feature root keeps only the model, errors, repository port, and `validator.go` for orchestration-input rules.
 - Files are named after their single responsibility: `route.go` registers, `router.go` versions, `get.go` handles one read.
 - Shared type-only or cross-feature helpers belong in `internal/shared/` only when at least two features genuinely use them.
 - Test files live under `test/unit/<same-path>/` with the same base name plus `_test.go` (e.g. `route_test.go`); test packages are external (`package http_test`).

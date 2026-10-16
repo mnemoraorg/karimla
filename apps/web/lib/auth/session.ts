@@ -1,21 +1,17 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
+import { env } from "@/lib/env"
 import { toYappiSession, type YappiSession } from "./session-user"
 
-const authBaseUrl = (
-  process.env.NEXT_PUBLIC_AUTH_URL ??
-  (process.env.NODE_ENV === "development" ? "http://localhost:35081" : "")
-).replace(/\/$/, "")
+const authBaseUrl = env.NEXT_PUBLIC_AUTH_URL_V1.replace(/\/+$/, "")
 
 async function loadSession(): Promise<YappiSession | null> {
-  if (!authBaseUrl) return null
-
   const cookieHeader = (await cookies()).toString()
   if (!cookieHeader) return null
 
   try {
-    const response = await fetch(`${authBaseUrl}/api/v1/auth/get-session`, {
+    const response = await fetch(`${authBaseUrl}/auth/get-session`, {
       cache: "no-store",
       headers: { cookie: cookieHeader },
       signal: AbortSignal.timeout(8_000),

@@ -9,6 +9,7 @@ import {
   incrementMember,
   joinGroup,
   listGroups,
+  sendGroupInvitations,
   type CreateGroupInput,
 } from "@/api/groups"
 
@@ -37,6 +38,17 @@ export function useGroup(id: string | undefined) {
     queryKey: ["group", id],
     queryFn: () => getGroup(id ?? ""),
     enabled: Boolean(id),
+  })
+}
+
+export type GroupInvitationsInput = {
+  groupId: string
+  emails: string[]
+}
+
+export function useSendGroupInvitations() {
+  return useMutation<number, Error, GroupInvitationsInput>({
+    mutationFn: ({ groupId, emails }) => sendGroupInvitations(groupId, emails),
   })
 }
 

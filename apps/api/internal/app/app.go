@@ -9,17 +9,21 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cloudflare/cloudflare-go/v6"
+	"github.com/cloudflare/cloudflare-go/v6/option"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/mnemoraorg/yappi/apps/api/internal/adapter/betterauth"
+	emailadapter "github.com/mnemoraorg/yappi/apps/api/internal/adapter/email"
 	postgresadapter "github.com/mnemoraorg/yappi/apps/api/internal/adapter/postgres"
 	"github.com/mnemoraorg/yappi/apps/api/internal/config"
 	deliveryhttp "github.com/mnemoraorg/yappi/apps/api/internal/delivery/http"
 	v1 "github.com/mnemoraorg/yappi/apps/api/internal/delivery/http/v1"
+	domaingroup "github.com/mnemoraorg/yappi/apps/api/internal/domain/group"
 	groupservice "github.com/mnemoraorg/yappi/apps/api/internal/domain/group/service"
-	grouphandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/api/group"
+	grouphandler "github.com/mnemoraorg/yappi/apps/api/internal/handler/v1/group"
 )
 
 type Application struct {
@@ -59,7 +63,14 @@ func New(cfg config.Config) (*Application, error) {
 	var dependencies v1.Dependencies
 	if store != nil {
 		sessionClient := betterauth.NewSessionClient(cfg.AuthBaseURL)
-		groupService := groupservice.NewService(store.Groups(), store.GroupCounts())
+		var invitationSender domaingroup.InvitationSender
+		if cfg.EmailDelivery.CloudflareAPIToken != "" {
+			cloudflareClient := cloudflare.NewClient(option.WithAPIToken(cfg.EmailDelivery.CloudflareAPIToken))
+			invitationSender = emailadapter.NewCloudflareInvitationSender(
+				cfg.EmailDelivery, cloudflareClient.EmailSending,
+			)
+		}
+		groupService := groupservice.NewService(store.Groups(), store.GroupCounts(), invitationSender)
 		dependencies = v1.Dependencies{
 			Groups: grouphandler.New(groupService),
 			Auth:   sessionClient,

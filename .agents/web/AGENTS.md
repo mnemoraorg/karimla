@@ -34,7 +34,7 @@ Server components forward request cookies to BetterAuth; client requests use `cr
 
 - HTTP request functions live in `api/`; React Query wrappers live in `hooks/api/`; components call hooks and never call endpoints or `fetch` directly.
 - The shared `QueryClient` disables retries and refetch-on-focus; mutations surface typed errors the form renders.
-- The auth base URL comes from `NEXT_PUBLIC_AUTH_URL` with a development fallback to `http://localhost:35081`.
+- Public configuration comes from the required `NEXT_PUBLIC_*` variables validated in `apps/web/lib/env.ts`; auth and API URLs include `/api/v1`.
 
 ## Testing
 

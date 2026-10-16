@@ -111,6 +111,22 @@ type fakeCounts struct {
 	rows map[string]map[string]int
 }
 
+type fakeInvitationSender struct {
+	recipients []string
+	invited    group.Group
+	err        error
+}
+
+func (f *fakeInvitationSender) SendGroupInvitations(
+	_ context.Context,
+	recipients []string,
+	invited group.Group,
+) error {
+	f.recipients = append([]string(nil), recipients...)
+	f.invited = invited
+	return f.err
+}
+
 func (f *fakeCounts) GetCount(_ context.Context, groupID, authUserID string) (int, error) {
 	return f.rows[groupID][authUserID], nil
 }
@@ -146,7 +162,62 @@ func newService() *groupservice.Service {
 			byCode:  map[string]string{},
 		},
 		&fakeCounts{rows: map[string]map[string]int{}},
+		nil,
 	)
+}
+
+func TestSendGroupInvitationsValidatesRecipientsAndRequiresMembership(t *testing.T) {
+	ctx := context.Background()
+	groups := &fakeGroups{
+		groups:  map[string]group.Group{},
+		members: map[string]map[string]group.Member{},
+		byCode:  map[string]string{},
+	}
+	sender := &fakeInvitationSender{}
+	service := groupservice.NewService(groups, &fakeCounts{rows: map[string]map[string]int{}}, sender)
+	created, err := service.CreateGroup(ctx, "user-1", "User One", "Crew", "karimla")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sent, err := service.SendGroupInvitations(ctx, "user-1", created.ID, []string{
+		" First@example.com ", "first@example.com", "second@example.com",
+	})
+	if err != nil || sent != 2 {
+		t.Fatalf("sent = %d, err = %v, want 2, nil", sent, err)
+	}
+	if len(sender.recipients) != 2 || sender.recipients[0] != "First@example.com" ||
+		sender.recipients[1] != "second@example.com" || sender.invited.InviteCode != created.InviteCode {
+		t.Fatalf("sender = %+v, want two normalized recipients and group", sender)
+	}
+
+	if _, err := service.SendGroupInvitations(ctx, "stranger", created.ID, []string{"third@example.com"}); !errors.Is(err, group.ErrNotMember) {
+		t.Fatalf("err = %v, want ErrNotMember", err)
+	}
+	if _, err := service.SendGroupInvitations(ctx, "user-1", created.ID, []string{"invalid"}); !errors.Is(err, group.ErrInvalidInput) {
+		t.Fatalf("err = %v, want ErrInvalidInput", err)
+	}
+	tooMany := make([]string, group.MaxInvitationRecipients+1)
+	for i := range tooMany {
+		tooMany[i] = "person@example.com"
+	}
+	if _, err := service.SendGroupInvitations(ctx, "user-1", created.ID, tooMany); !errors.Is(err, group.ErrInvalidInput) {
+		t.Fatalf("err = %v, want ErrInvalidInput for too many recipients", err)
+	}
+	if len(sender.recipients) != 2 {
+		t.Fatalf("sender called %d times, want no additional sends", len(sender.recipients))
+	}
+}
+
+func TestSendGroupInvitationsRequiresConfiguredSender(t *testing.T) {
+	service := newService()
+	created, err := service.CreateGroup(context.Background(), "user-1", "User One", "Crew", "karimla")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := service.SendGroupInvitations(context.Background(), "user-1", created.ID, []string{"a@example.com"}); !errors.Is(err, group.ErrInvitationsUnavailable) {
+		t.Fatalf("err = %v, want ErrInvitationsUnavailable", err)
+	}
 }
 
 func TestCreateGroupRejectsBlankNameAndPhrase(t *testing.T) {

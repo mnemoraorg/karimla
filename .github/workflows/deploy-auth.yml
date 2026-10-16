@@ -1,0 +1,34 @@
+name: Deploy Auth to Railway
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/auth/**"
+      - "docker/auth/**"
+      - "package.json"
+      - "bun.lock"
+      - ".github/workflows/deploy-auth.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Install Railway CLI
+        run: npm install --global @railway/cli
+
+      - name: Deploy to Railway
+        # Upload the repository root for docker/auth/Dockerfile.prod.
+        run: railway up --service "${{ vars.RAILWAY_AUTH_SERVICE_ID }}" --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

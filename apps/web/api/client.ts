@@ -1,8 +1,7 @@
-const REQUEST_TIMEOUT_MS = 10_000
+import { env } from "@/lib/env"
 
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_URL ??
-  (process.env.NODE_ENV === "development" ? "http://localhost:35080" : undefined)
+const REQUEST_TIMEOUT_MS = 10_000
+const apiBaseUrl = env.NEXT_PUBLIC_API_URL_V1.replace(/\/+$/, "")
 
 export class ApiError extends Error {
   constructor(
@@ -20,9 +19,7 @@ type ApiEnvelope<T> = {
 }
 
 export function apiUrl(path: string): string {
-  if (!apiBaseUrl) throw new Error("The API is unavailable.")
-
-  return `${apiBaseUrl.replace(/\/$/, "")}/api/v1${path.startsWith("/") ? path : `/${path}`}`
+  return `${apiBaseUrl}${path.startsWith("/") ? path : `/${path}`}`
 }
 
 export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {

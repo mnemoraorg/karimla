@@ -7,6 +7,7 @@ const corsConfig: CorsConfig = {
   allowedOrigins: ["http://localhost:35000"],
   allowedHeaders: ["Content-Type", "Authorization"],
   allowedMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  exposeHeaders: ["X-Retry-After"],
 }
 
 describe("auth HTTP app", () => {
@@ -44,6 +45,23 @@ describe("auth HTTP app", () => {
 
     expect(allowed.headers.get("access-control-allow-origin")).toBe("http://localhost:35000")
     expect(allowed.headers.get("access-control-allow-credentials")).toBe("true")
+    expect(allowed.headers.get("access-control-expose-headers")).toBe("X-Retry-After")
     expect(blocked.headers.get("access-control-allow-origin")).toBeNull()
+  })
+
+  it("keeps the rate-limit retry window readable from the web origin", async () => {
+    const handler = () =>
+      new Response(JSON.stringify({ message: "Too many requests. Please try again later." }), {
+        headers: { "X-Retry-After": "42" },
+        status: 429,
+      })
+    const response = await createApp(handler, corsConfig).request(
+      "/api/v1/auth/email-otp/send-verification-otp",
+      { headers: { Origin: "http://localhost:35000" }, method: "POST" },
+    )
+
+    expect(response.status).toBe(429)
+    expect(response.headers.get("x-retry-after")).toBe("42")
+    expect(response.headers.get("access-control-expose-headers")).toBe("X-Retry-After")
   })
 })

@@ -7,6 +7,7 @@ const originalFetch = globalThis.fetch
 
 const { sendLoginOtp } = await import("../../../api/auth/send-otp.ts")
 const { signInWithOtp } = await import("../../../api/auth/sign-in.ts")
+const { RateLimitedError, readRetryAfterSeconds } = await import("../../../api/auth/client.ts")
 
 afterEach(() => {
   globalThis.fetch = originalFetch
@@ -70,5 +71,37 @@ describe("signInWithOtp", () => {
     await expect(signInWithOtp({ email: "person@example.com", otp: "123456" })).rejects.toThrow(
       "That code didn't work. Check it and try again.",
     )
+  })
+})
+
+describe("rate limits", () => {
+  it("carries the retry window the service reported", async () => {
+    globalThis.fetch = async () =>
+      new Response(JSON.stringify({ message: "Too many requests. Please try again later." }), {
+        headers: { "X-Retry-After": "42" },
+        status: 429,
+      })
+
+    const error = await sendLoginOtp("person@example.com").catch((thrown) => thrown)
+
+    expect(error).toBeInstanceOf(RateLimitedError)
+    expect(error.retryAfterSeconds).toBe(42)
+  })
+
+  it("reports no window when the header is missing or unusable", async () => {
+    globalThis.fetch = async () =>
+      new Response(null, { headers: { "X-Retry-After": "soon" }, status: 429 })
+
+    const error = await signInWithOtp({ email: "person@example.com", otp: "123456" }).catch(
+      (thrown) => thrown,
+    )
+
+    expect(error).toBeInstanceOf(RateLimitedError)
+    expect(error.message).toBe("Too many attempts. Try again shortly.")
+    expect(error.retryAfterSeconds).toBeNull()
+    expect(readRetryAfterSeconds(new Response(null, { headers: { "X-Retry-After": "42" } }))).toBe(
+      42,
+    )
+    expect(readRetryAfterSeconds(new Response(null))).toBeNull()
   })
 })

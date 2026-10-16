@@ -29,6 +29,10 @@ describe("auth config", () => {
     ).toEqual(["http://localhost:35000", "https://karimla.example"])
   })
 
+  it("exposes the rate-limit retry window to the web app", () => {
+    expect(loadCorsConfig({}).exposeHeaders).toEqual(["X-Retry-After"])
+  })
+
   it("requires a strong BetterAuth secret and valid sender address", () => {
     expect(() => loadBetterAuthConfig({ ...validEnv, BETTER_AUTH_SECRET: "short" })).toThrow()
     expect(() => loadEmailConfig({ ...validEnv, NO_REPLY_EMAIL: "invalid" })).toThrow()

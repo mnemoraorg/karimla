@@ -24,5 +24,8 @@ export function loadCorsConfig(env: Environment = environment): CorsConfig {
     allowedOrigins: values.CORS_ALLOWED_ORIGINS,
     allowedHeaders: ["Content-Type", "Authorization"],
     allowedMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    // BetterAuth reports the remaining rate-limit window in this header, and the
+    // login form can only read it cross-origin when CORS exposes it.
+    exposeHeaders: ["X-Retry-After"],
   }
 }

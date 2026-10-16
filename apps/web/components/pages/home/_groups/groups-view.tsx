@@ -8,6 +8,7 @@ import { GroupCard } from "@/components/pages/home/_card/group-card"
 import { SpinnerFlicker01 } from "@packages/ui-w/shared/spinner-variant/spinner-flicker-01"
 import { CreateAGroupDialog } from "@/components/pages/home/_dialog/create-a-group-dialog"
 import { JoinAGroupDialog } from "@/components/pages/home/_dialog/join-a-group-dialog"
+import { SyncStatus } from "@/components/shared/_sync/sync-status"
 import { PageHeader } from "@/components/shared/_header/page-header"
 
 export function GroupsView(): React.ReactElement {
@@ -21,7 +22,7 @@ export function GroupsView(): React.ReactElement {
     )
   }
 
-  if (groups.error || !groups.data) {
+  if (!groups.data) {
     return (
       <p className="text-destructive text-center text-sm" role="alert">
         {groups.error?.message ?? "Groups could not be loaded."}
@@ -55,6 +56,7 @@ export function GroupsView(): React.ReactElement {
   return (
     <div className="flex min-h-[calc(100svh-10rem)] w-full flex-col gap-4 pt-20 pb-32">
       <PageHeader fixed title="Your groups" />
+      <SyncStatus stale={groups.error !== null} />
       <ul className="flex flex-col gap-3">
         {groups.data.map((group) => (
           <li key={group.id}>

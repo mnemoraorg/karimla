@@ -25,6 +25,11 @@ export const auth = betterAuth({
         },
       }
     : undefined,
+  // The plugin's own rule is strict everywhere, so relax the paths where a
+  // normal user would pay for it; see apps/auth/config/rate-limit.ts.
+  rateLimit: {
+    customRules: config.rateLimit.customRules,
+  },
   database: { db: authDatabase, type: "postgres", schemaName: "auth" },
   user: {
     fields: {
@@ -71,7 +76,7 @@ export const auth = betterAuth({
       disableSignUp: false,
       expiresIn: 600,
       otpLength: 6,
-      rateLimit: { max: 1, window: 60 },
+      rateLimit: config.rateLimit.emailOtpSend,
       sendVerificationOnSignUp: true,
       storeOTP: "hashed",
       sendVerificationOTP: (data) => emailSender.sendVerificationOtp(data),

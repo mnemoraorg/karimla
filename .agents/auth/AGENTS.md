@@ -14,6 +14,8 @@ BetterAuth is Yappi's canonical identity owner. It owns:
 
 Sign-in is email-only via the BetterAuth `emailOTP` plugin (6-digit code, 10-minute expiry, hashed storage). There are no passwords and no magic links. A new email signs up on first code verification; an existing email signs in.
 
+Rate limits belong to that flow as well. `apps/auth/config/rate-limit.ts` keeps the plugin's strict one-minute rule for sending a code, because every request costs an email, and overrides `/sign-in/email-otp`, where the code's own three attempts bound guessing and a typo must not cost a minute. Both count per client IP and path, and BetterAuth trusts only a single-value `x-forwarded-for` unless `advanced.ipAddress.trustedProxies` says otherwise: when no IP resolves, every client shares one bucket per path.
+
 The Go API (planned, port `35080`) owns counter and friends data only. It consumes an opaque BetterAuth user ID and must not create a duplicate API `users` table or copy credentials.
 
 Custom roles, organizations, account linking, invitations, or other identity features require an explicit product decision. Do not introduce them as scaffolding. `INVITATION_EMAIL` is reserved and unused by this app.

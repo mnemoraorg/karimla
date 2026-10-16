@@ -42,6 +42,7 @@ The Bun server owns transport concerns only: health, route delegation, process l
 - Use `apps/auth/lib/load-config.ts` for shared typed schema loading; keep schemas and mapping in their intent-specific modules.
 - Keep local values in `apps/auth/.env`; keep safe placeholders in `apps/auth/.env.example`.
 - Require a strong `BETTER_AUTH_SECRET` outside tests.
+- Set `BETTER_AUTH_COOKIE_DOMAIN` to the parent domain shared with the web app in production (for example `mnemora.org` for `auth-yappi.mnemora.org` and `yappi.mnemora.org`). Without it BetterAuth issues a host-only session cookie, the web app cannot read the session, and every protected route redirects to `/login`. Configuration fails fast in production when it is missing.
 - Keep trusted origins explicit and limited to known application origins.
 - Never log or expose database URLs, secrets, OTP codes, cookies, credentials, or session tokens.
 

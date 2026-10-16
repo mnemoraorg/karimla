@@ -44,6 +44,7 @@ The Bun server owns transport concerns only: health, route delegation, process l
 - Require a strong `BETTER_AUTH_SECRET` outside tests.
 - Set `BETTER_AUTH_COOKIE_DOMAIN` to the parent domain shared with the web app in production (for example `mnemora.org` for `auth-yappi.mnemora.org` and `yappi.mnemora.org`). Without it BetterAuth issues a host-only session cookie, the web app cannot read the session, and every protected route redirects to `/login`. Configuration fails fast in production when it is missing.
 - Keep trusted origins explicit and limited to known application origins.
+- Expose `X-Retry-After` through CORS `exposeHeaders` so the web app can read BetterAuth's rate-limit window from its own origin and count it down instead of guessing how long "shortly" is.
 - Never log or expose database URLs, secrets, OTP codes, cookies, credentials, or session tokens.
 
 ## Persistence and migrations

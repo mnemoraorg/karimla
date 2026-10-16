@@ -26,7 +26,7 @@ jobs:
         run: npm install --global @railway/cli
 
       - name: Deploy to Railway
-        # Upload the repository root so the configured Dockerfile can copy apps/api.
-        run: railway up . --service "${{ vars.RAILWAY_API_SERVICE_ID }}" --detach
+        # Railway defaults to the repository working directory; an explicit "." fails its upload prefix lookup.
+        run: railway up --service "${{ vars.RAILWAY_API_SERVICE_ID }}" --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

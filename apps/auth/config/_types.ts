@@ -15,6 +15,7 @@ export interface CorsConfig {
   allowedOrigins: string[]
   allowedHeaders: string[]
   allowedMethods: string[]
+  exposeHeaders: string[]
 }
 
 export interface DatabaseConfig {

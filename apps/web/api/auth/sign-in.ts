@@ -1,4 +1,4 @@
-import { authRequest } from "./client"
+import { authRequest, RateLimitedError, readRetryAfterSeconds } from "./client"
 
 export type SignInWithOtpInput = {
   email: string
@@ -15,7 +15,7 @@ export async function signInWithOtp({ email, otp }: SignInWithOtpInput): Promise
   })
 
   if (response.ok) return
-  if (response.status === 429) throw new Error("Too many attempts. Try again shortly.")
+  if (response.status === 429) throw new RateLimitedError(readRetryAfterSeconds(response))
 
   throw new Error("That code didn't work. Check it and try again.")
 }

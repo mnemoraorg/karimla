@@ -1,4 +1,4 @@
-import { authRequest } from "./client"
+import { authRequest, RateLimitedError, readRetryAfterSeconds } from "./client"
 
 export async function sendLoginOtp(email: string): Promise<void> {
   const normalizedEmail = email.trim().toLowerCase()
@@ -12,7 +12,7 @@ export async function sendLoginOtp(email: string): Promise<void> {
   })
 
   if (response.ok) return
-  if (response.status === 429) throw new Error("Too many attempts. Try again shortly.")
+  if (response.status === 429) throw new RateLimitedError(readRetryAfterSeconds(response))
 
   throw new Error("We couldn't send a code. Check your email and try again.")
 }

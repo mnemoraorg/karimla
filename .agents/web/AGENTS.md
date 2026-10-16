@@ -28,6 +28,7 @@ Server components forward request cookies to BetterAuth; client requests use `cr
 - `app/(protected)/` requires a session (`requireYappiSession`) and redirects to `/login` without one.
 - `app/(auth)/login` redirects to `/` when a session already exists.
 - The login form is email → 6-digit code; the pending email survives refresh through `?step=verify` plus session storage and is cleared on verify or email change.
+- Sign-in rate limits belong to the service. A `429` reports the remaining window in `X-Retry-After`, which the auth CORS boundary exposes; the form counts that window down on whichever action it blocks (send, resend, or verify) and keeps the resend deadline in local storage, because the limit applies per IP and path rather than per browser.
 - Treat any auth outage as logged-out (redirect to `/login`); there is no separate error page.
 
 ## Data fetching

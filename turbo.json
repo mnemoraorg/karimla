@@ -1,11 +1,19 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
+  "globalPassThroughEnv": [
+    "CLOUDFLARE_ACCOUNT_ID",
+    "CLOUDFLARE_API_TOKEN",
+    "NEXT_PUBLIC_API_URL_V1",
+    "NEXT_PUBLIC_AUTH_URL_V1",
+    "NEXT_PUBLIC_DEBUG",
+    "NEXT_PUBLIC_ENVIRONMENT"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"]
+      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**", "bin/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -15,7 +23,11 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["PORT", "ENVIRONMENT", "DEBUG"]
+    },
+    "deploy:cloudflare": {
+      "cache": false
     }
   }
 }

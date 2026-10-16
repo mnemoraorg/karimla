@@ -8,6 +8,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "format:check": "prettier --check \"{apps,packages}/**/*.{ts,tsx,md}\"",
     "prepare": "husky",
+    "clean:next": "find apps -mindepth 2 -maxdepth 2 -type d \\( -name .next -o -name .vinext \\) -exec rm -rf {} +",
     "check-types": "turbo run check-types"
   },
   "devDependencies": {

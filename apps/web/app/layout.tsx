@@ -1,4 +1,5 @@
 import "@packages/ui-w/styles/globals.css"
+import "@packages/ui-w/styles/fonts.css"
 import "@packages/ui-w/styles/variants/background.css"
 
 import type { Metadata } from "next"
@@ -6,7 +7,6 @@ import type { Metadata } from "next"
 import { QueryProvider } from "@/providers/query-provider"
 
 import { createMetadata } from "@packages/metadata"
-import { bricolageGrotesque } from "@packages/ui-w/lib/fonts"
 import { ThemeProvider } from "@packages/ui-w/providers/theme-provider"
 import { ToastProvider } from "@packages/ui-w/providers/toast-provider"
 import { TooltipProvider } from "@packages/ui-w/providers/tooltip-provider"
@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html className={bricolageGrotesque.variable} lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className="overflow-x-hidden font-sans tracking-tight antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <ToastProvider position="bottom-left">

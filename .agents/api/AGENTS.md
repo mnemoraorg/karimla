@@ -4,7 +4,7 @@
 
 `apps/api/` is the Go/Fiber API. BetterAuth remains the identity owner, PostgreSQL remains the data store, Ent will own runtime persistence, and Atlas will own schema migrations once the first schema lands.
 
-The API serves the web app's business data (starting with the counter). It consumes opaque BetterAuth user IDs and must not duplicate identity tables or credentials.
+The API serves the web app's business data (groups and their members). It consumes opaque BetterAuth user IDs and must not duplicate identity tables or credentials.
 
 ## Required references
 
@@ -31,10 +31,11 @@ apps/api/
 │   │       └── v1/
 │   │           └── router.go
 │   ├── handler/
-│   │   ├── api/
-│   │   └── health/
+│   │   └── v1/
+│   │       ├── group/
+│   │       └── health/
 │   ├── domain/
-│   │   └── counter/
+│   │   └── group/
 │   ├── middleware/
 │   │   └── auth/
 │   └── shared/
@@ -63,7 +64,7 @@ delivery/http → handler → domain service → repository port → adapter/Pos
 - `internal/app/` is the composition root and owns dependency wiring and graceful shutdown.
 - `internal/config/` owns environment parsing and validation.
 - `internal/delivery/http/` owns Fiber route registration, versioning, and middleware wiring.
-- `internal/handler/` translates HTTP requests and responses. Handlers must not query databases or orchestrate repositories.
+- `internal/handler/v1/<area>/` translates HTTP requests and responses, one file per operation (`group/create.go`, `health/get.go`). The directory carries the version while the package name stays the capability, and handlers must not query databases or orchestrate repositories.
 - `internal/domain/<feature>/` owns business models, errors, use cases, and repository interfaces. Domain code must not import Fiber.
 - Validation splits by trust level: handlers validate transport shape, domain `validator.go` owns orchestration-input rules called by every service operation, and repositories assume valid input.
 - `internal/adapter/` will own Ent/PostgreSQL and BetterAuth implementations.

@@ -6,6 +6,10 @@ import { Toasts } from "@packages/ui-w/shared/toast/toast"
 
 export const toastManager: ReturnType<typeof Toast.createToastManager> = Toast.createToastManager()
 
+/** Re-exported so apps can create their own toast managers (and providers)
+ *  from the same module instance the shared Toasts viewport renders. */
+export { Toast } from "@base-ui/react/toast"
+
 export type ToastPosition =
   "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right"
 

@@ -4,16 +4,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import {
   createGroup,
-  decrementMember,
   getGroup,
-  incrementMember,
   joinGroup,
   listGroups,
   sendGroupInvitations,
   type CreateGroupInput,
   type GroupDetail,
 } from "@/api/groups"
+import type { YappiSession } from "@/lib/auth/session-user"
 import { withMemberCountAdjusted } from "@/lib/group-counts"
+import { createCountOp } from "@/lib/sync/outbox"
+import { countSync } from "@/lib/sync/engine"
 
 export function useGroups() {
   return useQuery({ queryKey: ["groups", "with-member-previews"], queryFn: listGroups })
@@ -71,11 +72,25 @@ type MemberCountRollback = {
   previous: GroupDetail | undefined
 }
 
+type MemberCountResult = {
+  synced: boolean
+}
+
 function useMemberCount(delta: 1 | -1) {
   const queryClient = useQueryClient()
-  const request = delta === 1 ? incrementMember : decrementMember
-  return useMutation<number, Error, MemberCountInput, MemberCountRollback>({
-    mutationFn: ({ groupId, userId }) => request(groupId, userId),
+  return useMutation<MemberCountResult, Error, MemberCountInput, MemberCountRollback>({
+    mutationFn: async (variables) => {
+      const session = queryClient.getQueryData<YappiSession | null>(["session"])
+      const op = createCountOp({
+        delta,
+        groupId: variables.groupId,
+        userId: variables.userId,
+        ownerEmail: session?.email ?? null,
+      })
+      const outcome = await countSync.submit(op)
+      if (outcome.rejectedError) throw outcome.rejectedError
+      return { synced: outcome.synced }
+    },
     onMutate: async (variables) => {
       const queryKey = ["group", variables.groupId]
       await queryClient.cancelQueries({ queryKey })
@@ -90,8 +105,12 @@ function useMemberCount(delta: 1 | -1) {
         queryClient.setQueryData(["group", variables.groupId], context.previous)
       }
     },
-    onSettled: (_data, _error, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["group", variables.groupId] })
+    onSuccess: (result, variables) => {
+      // A merely queued tap must not invalidate: the refetch would fail
+      // offline and replace the page with the group error screen.
+      if (result.synced) {
+        queryClient.invalidateQueries({ queryKey: ["group", variables.groupId] })
+      }
     },
   })
 }

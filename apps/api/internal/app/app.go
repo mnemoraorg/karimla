@@ -5,8 +5,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net"
+	"os"
 	"strings"
 	"time"
 
@@ -35,9 +37,20 @@ type Application struct {
 	idempotency idempotency.Store
 }
 
+// NewAccessLogger records one line per request in the service's log shape,
+// including the User-Agent so stray requests stay attributable. Cookies,
+// authorization headers, and bodies are never logged.
+func NewAccessLogger(output io.Writer) fiber.Handler {
+	return logger.New(logger.Config{
+		Format:     "${time} | ${status} | ${latency} | ${ip} | ${method} | ${path} | ${error} | ${ua}\n",
+		TimeFormat: "15:04:05",
+		Output:     output,
+	})
+}
+
 func New(cfg config.Config) (*Application, error) {
 	server := fiber.New(fiber.Config{AppName: "yappi-api"})
-	server.Use(logger.New())
+	server.Use(NewAccessLogger(os.Stdout))
 	if len(cfg.CORS.AllowedOrigins) > 0 {
 		server.Use(cors.New(cors.Config{
 			AllowOrigins:     strings.Join(cfg.CORS.AllowedOrigins, ","),

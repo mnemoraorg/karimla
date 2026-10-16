@@ -5,4 +5,4 @@
 - Handlers return the shared envelope via `response.JSON(c, status, body)`; see `internal/shared/response/`.
 - Validate transport input in the handler (types, required fields, ranges) and reject with `400` plus a stable error code before calling the service.
 - Name routes after resources and intent (`GET /groups`, `POST /groups/:id/members/:userId/increment`), version once under `/v1`, and keep the frontend's exact paths stable once shipped.
-- CORS and credentials behavior comes from config; access logs must not include cookies, authorization headers, or request bodies.
+- CORS and credentials behavior comes from config. Access logs record method, path, status, latency, IP, and User-Agent so stray requests stay attributable; they must not include cookies, authorization headers, or request bodies.

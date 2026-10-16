@@ -38,6 +38,18 @@ When the user explicitly requests GitHub delivery, use the retained-work loop:
 
 If a required remote issue, review, CI check, or merge step is blocked, report it instead of treating the work as complete.
 
+## Promotion
+
+`main` receives promotions and nothing else. Implement every change on `development` through the loops above; never edit, commit, or fix on `main`, and never branch from it. `main` only ever receives merge commits from `development`.
+
+Promote only when the user asks for it:
+
+1. **Sync** — switch to `main` and run `git pull --ff-only origin main`.
+2. **Merge** — merge `development` into `main` with `--no-ff` and a substantive message (see below), then push `main`.
+3. **Return** — switch back to `development` and run `git pull --ff-only origin development`.
+
+Step 3 is not optional. Leave the working tree on `development` so the next change starts there; never finish a promotion checked out on `main`. Report the deploys the promotion triggered.
+
 ## Commit and merge messages
 
 Use Conventional Commits (`type(scope): subject`) everywhere a message is recorded, including GitHub-generated ones:
